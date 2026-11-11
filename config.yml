@@ -112,9 +112,9 @@ collections:
                     required: false
               - name: slides
                 label: "Слайды первого экрана"
-                label_singular: "Слайд"
+                label_singular: "слайд"
                 widget: list
-                hint: "От 1 до 8 фото. Порядок на сайте — как в списке. Перетащите карточку или нажмите стрелки, чтобы поменять."
+                hint: "От 1 до 8 фото. Порядок на сайте — как в списке. Меняйте стрелками ↑ ↓; на компьютере можно перетащить за значок ═."
                 min: 1
                 max: 8
                 summary: "{{caption.en}}"
@@ -224,7 +224,7 @@ collections:
                     default: true
           - name: stats
             label: "Цифры под первым экраном"
-            label_singular: "Цифра"
+            label_singular: "цифру"
             widget: list
             hint: "«Два поколения» стоит и на странице «О компании» — меняйте в обоих местах."
             summary: "{{value.en}}"
@@ -311,7 +311,7 @@ collections:
                     required: false
               - name: items
                 label: "Вехи истории"
-                label_singular: "Веха"
+                label_singular: "веху"
                 widget: list
                 summary: "{{year.en}}"
                 fields:
@@ -415,7 +415,7 @@ collections:
                     required: false
               - name: steps
                 label: "Этапы работы"
-                label_singular: "Этап"
+                label_singular: "этап"
                 widget: list
                 summary: "{{title.en}}"
                 fields:
@@ -614,9 +614,9 @@ collections:
                     required: false
               - name: items
                 label: "Карточки проектов"
-                label_singular: "Карточка"
+                label_singular: "карточку"
                 widget: list
-                hint: "Порядок на сайте — как в списке. Перетащите карточку или нажмите стрелки, чтобы поменять."
+                hint: "Порядок на сайте — как в списке. Меняйте стрелками ↑ ↓; на компьютере можно перетащить за значок ═."
                 summary: "{{name.en}}"
                 thumbnail: "photo.image"
                 collapsed: true
@@ -642,6 +642,7 @@ collections:
                   - name: meta
                     label: "Площадь и год"
                     widget: object
+                    required: false
                     hint: "Сейчас стоят заготовки в квадратных скобках. Необязательно: заполнять только если подтверждено."
                     fields:
                       - name: en
@@ -881,7 +882,7 @@ collections:
                     widget: text
                     required: false
           - name: seo
-            label: "Поисковики и соцсети"
+            label: "Данные для поисковиков и соцсетей"
             widget: object
             required: false
             hint: "Заголовок вкладки и описание для Google и соцсетей."
@@ -1017,7 +1018,7 @@ collections:
                     required: false
           - name: facts
             label: "Ключевые факты"
-            label_singular: "Факт"
+            label_singular: "факт"
             widget: list
             hint: "«Два поколения» стоит и на главной — меняйте в обоих местах."
             summary: "{{value.en}}"
@@ -1172,7 +1173,7 @@ collections:
                         required: false
               - name: paragraphs
                 label: "Абзацы"
-                label_singular: "Абзац"
+                label_singular: "абзац"
                 widget: list
                 summary: "{{text.en | truncate(70, '…')}}"
                 fields:
@@ -1213,7 +1214,7 @@ collections:
                     required: false
               - name: items
                 label: "Вехи"
-                label_singular: "Веха"
+                label_singular: "веху"
                 widget: list
                 summary: "{{year.en}}"
                 fields:
@@ -1270,7 +1271,7 @@ collections:
                     required: false
               - name: items
                 label: "Принципы"
-                label_singular: "Принцип"
+                label_singular: "принцип"
                 widget: list
                 hint: "Третий принцип назван так же, как блок «Проект под ваш бюджет» на главной — меняйте в обоих местах."
                 summary: "{{title.en}}"
@@ -1735,7 +1736,7 @@ collections:
                         widget: string
                         required: false
               - name: established
-                label: "Строка «Год основания»: значение"
+                label: "Строка «Основана»: значение"
                 widget: object
                 fields:
                   - name: en
@@ -1789,7 +1790,7 @@ collections:
                     widget: string
                     required: false
           - name: seo
-            label: "Поисковики и соцсети"
+            label: "Данные для поисковиков и соцсетей"
             widget: object
             required: false
             hint: "Заголовок вкладки и описание для Google и соцсетей."
@@ -2019,7 +2020,7 @@ collections:
                 widget: string
                 required: false
       - name: summary
-        label: "Коротко о проекте"
+        label: "Краткое описание"
         widget: object
         required: false
         hint: "1–2 предложения для карточки, до 200 знаков."
@@ -2039,7 +2040,7 @@ collections:
             required: false
             maxlength: 200
       - name: body
-        label: "История проекта"
+        label: "Рассказ о проекте"
         widget: object
         required: false
         fields:
@@ -2056,10 +2057,10 @@ collections:
             required: false
       - name: gallery
         label: "Фото проекта"
-        label_singular: "Фото"
+        label_singular: "фото"
         widget: list
         required: false
-        hint: "Порядок на сайте — как в списке. Перетащите карточку или нажмите стрелки, чтобы поменять."
+        hint: "Порядок на сайте — как в списке. Меняйте стрелками ↑ ↓; на компьютере можно перетащить за значок ═."
         summary: "{{alt.en | truncate(60, '…')}}"
         thumbnail: image
         collapsed: true
@@ -2174,7 +2175,7 @@ collections:
                 value: auto
       - name: press
         label: "Публикации"
-        label_singular: "Публикация"
+        label_singular: "публикацию"
         widget: list
         required: false
         summary: "{{name}}"
@@ -2187,7 +2188,7 @@ collections:
             widget: string
             type: url
       - name: seo
-        label: "Поисковики и соцсети"
+        label: "Данные для поисковиков и соцсетей"
         widget: object
         required: false
         hint: "Заголовок вкладки и описание для Google и соцсетей."
@@ -2267,7 +2268,7 @@ collections:
                 required: false
           - name: order
             label: "Порядок проектов"
-            label_singular: "Проект"
+            label_singular: "проект"
             widget: list
             hint: "Проекты, которых нет в списке, идут в конце по названию. На сайте видны только проекты с включённым «Показывать на сайте»."
             summary: "{{project}}"
@@ -2308,9 +2309,9 @@ collections:
                 required: false
           - name: people
             label: "Люди"
-            label_singular: "Человек"
+            label_singular: "человека"
             widget: list
-            hint: "Порядок на сайте — как в списке. Перетащите карточку или нажмите стрелки, чтобы поменять."
+            hint: "Порядок на сайте — как в списке. Меняйте стрелками ↑ ↓; на компьютере можно перетащить за значок ═."
             summary: "{{name.en}} — {{role.en}}"
             thumbnail: "photo.image"
             collapsed: true
@@ -2680,9 +2681,9 @@ collections:
                 required: false
           - name: items
             label: "Услуги"
-            label_singular: "Услуга"
+            label_singular: "услугу"
             widget: list
-            hint: "Порядок на сайте — как в списке. Перетащите карточку или нажмите стрелки, чтобы поменять."
+            hint: "Порядок на сайте — как в списке. Меняйте стрелками ↑ ↓; на компьютере можно перетащить за значок ═."
             summary: "{{title.en}}"
             thumbnail: "photo.image"
             collapsed: true
@@ -2918,7 +2919,7 @@ collections:
                     widget: string
                     required: false
               - name: budget
-                label: "Вариант «От моего бюджета»"
+                label: "Вариант «Начать с бюджета»"
                 widget: object
                 fields:
                   - name: en
@@ -2973,7 +2974,7 @@ collections:
                     required: false
               - name: options
                 label: "Варианты"
-                label_singular: "Вариант"
+                label_singular: "вариант"
                 widget: list
                 hint: "Варианты заданы в коде калькулятора: тексты и фото менять можно, добавлять и удалять варианты нельзя."
                 summary: "{{label.en}}"
@@ -3137,7 +3138,7 @@ collections:
               - name: unit_area
                 label: "Площадь с единицей"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3221,7 +3222,7 @@ collections:
                     required: false
               - name: options
                 label: "Варианты"
-                label_singular: "Вариант"
+                label_singular: "вариант"
                 widget: list
                 hint: "Варианты заданы в коде калькулятора: тексты менять можно, добавлять и удалять варианты нельзя."
                 summary: "{{label.en}}"
@@ -3278,7 +3279,7 @@ collections:
                     widget: string
                     required: false
           - name: roof
-            label: "Шаг «Кровля»"
+            label: "Шаг «Крыша»"
             widget: object
             fields:
               - name: title
@@ -3298,7 +3299,7 @@ collections:
                     required: false
               - name: options
                 label: "Варианты"
-                label_singular: "Вариант"
+                label_singular: "вариант"
                 widget: list
                 hint: "Варианты заданы в коде калькулятора: тексты менять можно, добавлять и удалять варианты нельзя."
                 summary: "{{label.en}}"
@@ -3360,7 +3361,7 @@ collections:
                     required: false
               - name: options
                 label: "Варианты"
-                label_singular: "Вариант"
+                label_singular: "вариант"
                 widget: list
                 hint: "Варианты заданы в коде калькулятора: тексты менять можно, добавлять и удалять варианты нельзя."
                 summary: "{{label.en}}"
@@ -3422,7 +3423,7 @@ collections:
                     required: false
               - name: options
                 label: "Варианты"
-                label_singular: "Вариант"
+                label_singular: "вариант"
                 widget: list
                 hint: "Варианты заданы в коде калькулятора: тексты менять можно, добавлять и удалять варианты нельзя."
                 summary: "{{label.en}}"
@@ -3451,7 +3452,7 @@ collections:
               - name: interior_desc
                 label: "Пояснение к «Интерьер и мебель»"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3516,7 +3517,7 @@ collections:
                     required: false
               - name: options
                 label: "Варианты"
-                label_singular: "Вариант"
+                label_singular: "вариант"
                 widget: list
                 hint: "Варианты заданы в коде калькулятора: тексты менять можно, добавлять и удалять варианты нельзя."
                 summary: "{{label.en}}"
@@ -3610,7 +3611,7 @@ collections:
               - name: build_sub
                 label: "Строка под ценой"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3624,9 +3625,9 @@ collections:
                     widget: string
                     required: false
               - name: budget_label
-                label: "Фраза «С бюджетом … можно построить около»"
+                label: "Фраза «На … можно построить около»"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3642,7 +3643,7 @@ collections:
               - name: budget_label_none
                 label: "То же, если ничего не подходит"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3658,7 +3659,7 @@ collections:
               - name: budget_sub
                 label: "Строка под результатом по бюджету"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3689,7 +3690,7 @@ collections:
               - name: result
                 label: "Строка «Результат»"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3705,7 +3706,7 @@ collections:
               - name: none
                 label: "Строка «Меньше … м²»"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3797,7 +3798,7 @@ collections:
               - name: rate
                 label: "Строка с курсом доллара"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3817,7 +3818,7 @@ collections:
               - name: house
                 label: "Дом"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3833,7 +3834,7 @@ collections:
               - name: house_kit
                 label: "Разборный дом-комплект"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -3913,7 +3914,7 @@ collections:
                   - name: one
                     label: "1 контейнер"
                     widget: object
-                    hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                    hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                     fields:
                       - name: en
                         label: EN
@@ -3929,7 +3930,7 @@ collections:
                   - name: few
                     label: "2–4 контейнера (только RU)"
                     widget: object
-                    hint: "Форма для русского языка: в EN и ID её нет, эти поля оставьте пустыми. Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                    hint: "Форма для русского языка: в EN и ID её нет, эти поля оставьте пустыми. Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                     fields:
                       - name: en
                         label: EN
@@ -3946,7 +3947,7 @@ collections:
                   - name: many
                     label: "5 и больше контейнеров (только RU)"
                     widget: object
-                    hint: "Форма для русского языка: в EN и ID её нет, эти поля оставьте пустыми. Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                    hint: "Форма для русского языка: в EN и ID её нет, эти поля оставьте пустыми. Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                     fields:
                       - name: en
                         label: EN
@@ -3963,7 +3964,7 @@ collections:
                   - name: other
                     label: "Несколько контейнеров"
                     widget: object
-                    hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                    hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                     fields:
                       - name: en
                         label: EN
@@ -4103,7 +4104,7 @@ collections:
               - name: message_rates
                 label: "Строка о ставках в письме"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4188,7 +4189,7 @@ collections:
               - name: mln
                 label: "Миллионы рупий"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4204,7 +4205,7 @@ collections:
               - name: bn
                 label: "Миллиарды рупий"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4220,7 +4221,7 @@ collections:
               - name: range_mln
                 label: "Диапазон в миллионах"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4236,7 +4237,7 @@ collections:
               - name: range_bn
                 label: "Диапазон в миллиардах"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4252,7 +4253,7 @@ collections:
               - name: range_mln_bn
                 label: "Диапазон от миллионов до миллиардов"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4268,7 +4269,7 @@ collections:
               - name: usd_k
                 label: "Тысячи долларов"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4284,7 +4285,7 @@ collections:
               - name: usd_m
                 label: "Миллионы долларов"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4300,7 +4301,7 @@ collections:
               - name: usd_range_k
                 label: "Диапазон в тысячах долларов"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4316,7 +4317,7 @@ collections:
               - name: usd_range_m
                 label: "Диапазон в миллионах долларов"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4332,7 +4333,7 @@ collections:
               - name: usd_range_km
                 label: "Диапазон от тысяч до миллионов долларов"
                 widget: object
-                hint: "Слова в фигурных скобках (`{n}`, `{area}` и т. п.) сайт заменяет числами: их не переводить и не удалять."
+                hint: "Слова в фигурных скобках (`{n}`, `{area}`, `{type}` и т. п.) сайт заменяет значениями: числами, типом дома, этажностью, валютой. Их не переводить и не удалять."
                 fields:
                   - name: en
                     label: EN
@@ -4346,7 +4347,7 @@ collections:
                     widget: string
                     required: false
           - name: seo
-            label: "Поисковики и соцсети"
+            label: "Данные для поисковиков и соцсетей"
             widget: object
             required: false
             hint: "Заголовок вкладки и описание для Google и соцсетей."
@@ -4445,7 +4446,7 @@ collections:
             choose_url: false
           - name: socials
             label: "Ссылки на соцсети"
-            label_singular: "Ссылка"
+            label_singular: "ссылку"
             widget: list
             summary: "{{label}}"
             fields:
@@ -4650,7 +4651,7 @@ collections:
                     widget: string
                     required: false
               - name: contact
-                label: "Поле «Email или WhatsApp»"
+                label: "Поле «E-mail или WhatsApp»"
                 widget: object
                 fields:
                   - name: en
@@ -4681,7 +4682,7 @@ collections:
                     required: false
               - name: topics
                 label: "Варианты ответа"
-                label_singular: "Вариант"
+                label_singular: "вариант"
                 widget: list
                 hint: "Варианты заданы в коде сайта: тексты менять можно, добавлять и удалять нельзя."
                 summary: "{{label.en}}"
@@ -4708,7 +4709,7 @@ collections:
                         widget: string
                         required: false
               - name: plot
-                label: "Поле «Где участок?»"
+                label: "Поле «Где находится участок?»"
                 widget: object
                 fields:
                   - name: en
@@ -4956,7 +4957,7 @@ collections:
             collapsed: true
             fields:
               - name: skip
-                label: "Ссылка «Перейти к содержимому»"
+                label: "Ссылка «Перейти к содержанию»"
                 widget: object
                 fields:
                   - name: en
@@ -5106,7 +5107,7 @@ collections:
                     widget: string
                     required: false
               - name: copy_legal
-                label: "Копировать юридическое название"
+                label: "Скопировать юридическое название"
                 widget: object
                 fields:
                   - name: en
