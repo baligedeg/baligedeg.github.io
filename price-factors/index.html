@@ -92,6 +92,8 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 .after { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-top: 20px; }
 .after__text { margin: 0; flex: 1 1 260px; min-width: 0; font-size: 14px; color: var(--muted); }
 .copied { margin: 0; font-size: 14px; color: var(--muted); flex-basis: 100%; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(88px + env(safe-area-inset-bottom, 0px)); z-index: 5; box-sizing: border-box; width: max-content; max-width: min(calc(100vw - 32px), 520px); margin: 0; padding: 12px 16px; background: var(--pressed-bg); color: var(--pressed-fg); font: 400 14px/1.45 var(--font-body); pointer-events: none; }
+.copied:empty, .toast:empty { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .copy-text { width: 100%; min-height: 160px; margin-top: 8px; padding: 10px; border: 1px solid var(--rule-strong); background: var(--field); color: var(--fg); font: 400 13px/1.5 var(--font-mono); }
 .foot { margin: 0; padding-block: 18px 40px; font-size: 13px; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .seg button, .lang button { transition: none; } }
@@ -118,15 +120,16 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       <span class="progress" id="progress"></span>
       <span class="status" id="status" role="status" aria-live="polite"></span>
     </div>
-    <a class="copy" id="send" href="https://wa.me/" target="_blank" rel="noopener"></a>
+    <a class="copy" id="send" href="https://api.whatsapp.com/send"></a>
   </div>
   <div class="after">
     <p class="after__text" id="t-copyHint"></p>
     <button type="button" class="copy copy--quiet" id="copy"></button>
-    <p class="copied" id="copied" hidden></p>
-    <textarea class="copy-text" id="copy-text" hidden readonly aria-label="Answers"></textarea>
+    <p class="copied" id="copied" role="status" aria-live="polite"></p>
+    <textarea class="copy-text" id="copy-text" hidden readonly aria-label="Answers" aria-describedby="copied"></textarea>
   </div>
   <p class="foot" id="t-foot"></p>
+  <p class="toast" id="toast" role="status" aria-live="polite"></p>
 </div>
 
 <script>
@@ -139,7 +142,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       eyebrow: 'Bali Gedeg · website calculator',
       title: 'What changes the price?',
       lead: 'The price calculator on our new website now uses your estimates of 13 November: 10, 12 and 13.5 million rupiah per m² for Basic, Standard and Premium finish. Please tick what you offer, write anything that is missing, and mark which choices change the price, and by how much.',
-      howto: 'Tick the options you offer and tap Yes, No or Not sure for each item. Your answers stay on this device while you fill it in. When you are done, tap “Send on WhatsApp” at the bottom and send them to us.',
+      howto: 'Tick the options you offer and tap Yes, No or Not sure for each item. Your answers stay on this device while you fill it in. When you are done, tap “Send on WhatsApp” at the bottom and send them to us. The button also copies your answers, so you can paste them if needed.',
       s1: 'What do you offer, and what changes the price?',
       s1sub: 'Tick every option you offer and write your own if it is missing. Then say whether the choice makes the price per m² higher or lower. If yes, write the difference against the first option, in %. For example: concrete −5%, timber +10%.',
       s2: 'Please check our numbers',
@@ -172,7 +175,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       st_connecting: 'Connecting…', st_ready: 'Answers save by themselves', st_saving: 'Saving…', st_saved: 'All answers saved',
       st_local: 'Kept on this device until you send it', st_error: 'Not saved. Copy your answers and send them on WhatsApp.', st_slow: 'Saved answers can’t be loaded yet. You can keep going.',
       banner: 'This page can’t save your answers here. Fill it in, then tap “Copy all answers” and send them on WhatsApp.',
-      send: 'Send on WhatsApp', copy: 'Copy answers', copyHint: 'If WhatsApp doesn’t open, copy the answers and paste them into our chat.', copied: 'Copied. Paste them into WhatsApp.', copyFail: 'Couldn’t copy. Select the text below and copy it.',
+      send: 'Send on WhatsApp', copy: 'Copy answers', copyHint: 'If WhatsApp doesn’t open, or opens without your answers, copy them here and paste them into our chat.', copied: 'Copied. Open our chat in WhatsApp, press and hold the message box and tap Paste.', copyFail: 'Couldn’t copy automatically. Press and hold the text below, select all of it (drag the handles to the start and the end), then tap “Copy”.', copyStale: 'You changed answers after copying. Tap “Copy answers” again.', sentCopied: 'Your answers are also copied. If WhatsApp doesn’t open or the message is empty, open our chat, press and hold the message box and tap Paste.', sentNotCopied: 'If WhatsApp doesn’t open, or opens without your answers, use “Copy answers” at the end of the page.',
       foot: 'This page is only for Bali Gedeg. Nothing is sent until you tap “Send on WhatsApp”.',
       txtHead: 'Calculator price factors, answers', txtChanges: 'changes the price', txtNoChange: 'does not change the price', txtUnsure: 'not sure', txtNot: 'not answered',
       txtRight: 'right', txtWrong: 'changed', txtNote: 'Comment', txtOther: 'Anything else', txtOffer: 'Offered', txtNone: 'nothing ticked', txtOwn: 'own option'
@@ -181,7 +184,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       eyebrow: 'Bali Gedeg · kalkulator situs web',
       title: 'Apa yang mengubah harga?',
       lead: 'Kalkulator harga di situs baru kita sekarang memakai estimasi Bapak tanggal 13 November: 10, 12, dan 13,5 juta rupiah per m² untuk finishing Basic, Standard, dan Premium. Mohon centang yang Bapak tawarkan, tulis yang belum ada, dan tandai pilihan yang mengubah harga, serta seberapa besar.',
-      howto: 'Centang pilihan yang Bapak tawarkan dan ketuk Ya, Tidak, atau Belum tahu untuk setiap poin. Jawaban tetap tersimpan di perangkat ini selama Bapak mengisi. Setelah selesai, ketuk “Kirim lewat WhatsApp” di bawah dan kirim ke kami.',
+      howto: 'Centang pilihan yang Bapak tawarkan dan ketuk Ya, Tidak, atau Belum tahu untuk setiap poin. Jawaban tetap tersimpan di perangkat ini selama Bapak mengisi. Setelah selesai, ketuk “Kirim lewat WhatsApp” di bawah dan kirim ke kami. Tombol itu juga menyalin jawaban Bapak, jadi bisa ditempel jika perlu.',
       s1: 'Apa yang Bapak tawarkan, dan apa yang mengubah harga?',
       s1sub: 'Centang setiap pilihan yang Bapak tawarkan dan tulis sendiri jika belum ada. Lalu tandai apakah pilihan itu membuat harga per m² lebih tinggi atau lebih rendah. Jika ya, tulis selisihnya dibandingkan pilihan pertama, dalam %. Contoh: beton −5%, kayu +10%.',
       s2: 'Mohon cek angka kami',
@@ -214,7 +217,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       st_connecting: 'Menghubungkan…', st_ready: 'Jawaban tersimpan sendiri', st_saving: 'Menyimpan…', st_saved: 'Semua jawaban tersimpan',
       st_local: 'Tersimpan di perangkat ini sampai dikirim', st_error: 'Belum tersimpan. Salin jawaban dan kirim lewat WhatsApp.', st_slow: 'Jawaban tersimpan belum bisa dimuat. Bapak bisa tetap mengisi.',
       banner: 'Halaman ini tidak bisa menyimpan jawaban di sini. Isi dulu, lalu ketuk “Salin semua jawaban” dan kirim lewat WhatsApp.',
-      send: 'Kirim lewat WhatsApp', copy: 'Salin jawaban', copyHint: 'Jika WhatsApp tidak terbuka, salin jawaban lalu tempel di chat kami.', copied: 'Tersalin. Tempel di WhatsApp.', copyFail: 'Tidak bisa menyalin. Pilih teks di bawah lalu salin.',
+      send: 'Kirim lewat WhatsApp', copy: 'Salin jawaban', copyHint: 'Jika WhatsApp tidak terbuka atau terbuka tanpa jawaban Bapak, salin di sini lalu tempel di chat kami.', copied: 'Tersalin. Buka chat kami di WhatsApp, tekan lama kolom pesan, lalu ketuk Tempel.', copyFail: 'Tidak bisa menyalin otomatis. Tekan lama teks di bawah, pilih semua teksnya (geser penanda ke awal dan akhir), lalu ketuk “Salin”.', copyStale: 'Jawaban diubah setelah disalin. Ketuk “Salin jawaban” lagi.', sentCopied: 'Jawaban Bapak juga sudah disalin. Jika WhatsApp tidak terbuka atau pesannya kosong, buka chat kami, tekan lama kolom pesan, lalu ketuk Tempel.', sentNotCopied: 'Jika WhatsApp tidak terbuka atau terbuka tanpa jawaban Bapak, pakai “Salin jawaban” di akhir halaman.',
       foot: 'Halaman ini hanya untuk Bali Gedeg. Tidak ada yang terkirim sebelum Bapak mengetuk “Kirim lewat WhatsApp”.',
       txtHead: 'Faktor harga kalkulator, jawaban', txtChanges: 'mengubah harga', txtNoChange: 'tidak mengubah harga', txtUnsure: 'belum tahu', txtNot: 'belum dijawab',
       txtRight: 'benar', txtWrong: 'diubah', txtNote: 'Catatan', txtOther: 'Hal lain', txtOffer: 'Ditawarkan', txtNone: 'belum dicentang', txtOwn: 'pilihan lain'
@@ -253,7 +256,9 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
   try { var savedLang = localStorage.getItem('bg-price-factors-lang'); if (savedLang === 'id' || savedLang === 'en') lang = savedLang; } catch (e) {}
   try { var draft = JSON.parse(localStorage.getItem('bg-price-factors-draft') || 'null'); if (draft && typeof draft === 'object') Object.keys(DEFAULTS).forEach(function (k) { if (draft[k]) state[k] = merge(clone(DEFAULTS[k]), draft[k]); }); } catch (e) {}
 
-  function str(v) { return v == null ? '' : String(v).slice(0, 2000); }
+  /* one limit for what a field holds, what is saved and what is sent (maxlength is set in build) */
+  var MAXLEN = 5000;
+  function str(v) { return v == null ? '' : String(v).slice(0, MAXLEN); }
   function strMap(m) { var d = {}; if (m && typeof m === 'object') Object.keys(m).slice(0, 12).forEach(function (o) { d[o] = str(m[o]); }); return d; }
   /* the stored body, laid over the defaults' shape: only known fields, every value a string */
   function merge(base, data) {
@@ -301,7 +306,9 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
   function input(key, field, label, unit, opts) {
     opts = opts || {};
     var id = 'f-' + key + '-' + field.replace(/\./g, '-');
-    var inp = el('input', { id: id, 'data-key': key, 'data-field': field, inputmode: opts.text ? 'text' : 'decimal', autocomplete: 'off' });
+    var inp = el('input', { id: id, 'data-key': key, 'data-field': field, inputmode: opts.text || opts.signed ? 'text' : 'decimal', autocomplete: 'off' });
+    /* the iPhone decimal pad has no minus key, so differences (+10, −5) get the normal keyboard */
+    if (opts.signed) { inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.setAttribute('spellcheck', 'false'); }
     if (opts.text) inp.className = 'txt';
     if (opts.placeholder) inp.setAttribute('placeholder', opts.placeholder);
     var box = el('span', { class: 'box' }, [inp, unit ? el('i', { 'aria-hidden': 'true', text: unit }) : null]);
@@ -321,8 +328,8 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     form.appendChild(el('div', { class: 'section-head' }, [el('h2', { text: '1. ' + t('s1') }), el('p', { class: 'section-sub', text: t('s1sub') })]));
     FACTORS.forEach(function (f, i) {
       var diffs = el('div', { class: 'fields', 'data-show': f.key + ':affects:yes' });
-      f.options.slice(1).forEach(function (o) { diffs.appendChild(input(f.key, 'diff.' + o, t(o === 'traditional' ? 'traditionalShort' : o), '%', { placeholder: '+10' })); });
-      var ownDiff = input(f.key, 'diff.own', t('own'), '%', { placeholder: '+10', labelFor: f.key });
+      f.options.slice(1).forEach(function (o) { diffs.appendChild(input(f.key, 'diff.' + o, t(o === 'traditional' ? 'traditionalShort' : o), '%', { placeholder: '+10 / −5', signed: true })); });
+      var ownDiff = input(f.key, 'diff.own', t('own'), '%', { placeholder: '+10 / −5', signed: true, labelFor: f.key });
       ownDiff.setAttribute('data-show-own', f.key);
       diffs.appendChild(ownDiff);
       form.appendChild(el('section', { class: 'item', 'data-item': f.key }, [
@@ -364,7 +371,8 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     document.documentElement.lang = lang;
     Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang)); });
     Object.keys(DEFAULTS).forEach(fill);
-    renderStatus(); progress();
+    Array.prototype.forEach.call(document.querySelectorAll('input[data-field]:not([type="checkbox"]), textarea[data-field]'), function (n) { n.setAttribute('maxlength', String(MAXLEN)); });
+    renderStatus(); progress(); copyRefresh(false);
     if (localOnly) showBanner();
   }
 
@@ -386,7 +394,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     Array.prototype.forEach.call(document.querySelectorAll('[data-own-label="' + key + '"]'), function (n) { n.textContent = own || t('own'); });
   }
   function answered() { return Object.keys(ANSWER_FIELD).filter(function (k) { return !!state[k][ANSWER_FIELD[k]]; }).length; }
-  function progress() { $('progress').textContent = t('progress').replace('{n}', answered()).replace('{total}', TOTAL); }
+  function progress() { $('progress').textContent = t('progress').replace('{n}', answered()).replace('{total}', TOTAL); $('send').href = waLink(text()); }
 
   /* ---------- saving ---------- */
   var db = null, localOnly = false, statusKey = 'local', dirty = {}, inflight = {}, again = {}, timers = {};
@@ -397,7 +405,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
   function busy() { return Object.keys(timers).some(function (k) { return timers[k]; }) || Object.keys(inflight).some(function (k) { return inflight[k]; }); }
 
   function changed(key) {
-    dirty[key] = true; saveDraft(); progress();
+    dirty[key] = true; saveDraft(); progress(); copyRefresh(true);
     if (localOnly || !db) { setStatus(db === null && !connecting ? 'local' : statusKey); return; }
     setStatus('saving');
     clearTimeout(timers[key]); timers[key] = setTimeout(function () { timers[key] = null; flush(key); }, 700);
@@ -446,7 +454,8 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
   document.addEventListener('change', onField);
 
   /* ---------- copy ---------- */
-  function sign(v) { v = str(v).trim(); if (!v) return ''; return /^[+\-−]/.test(v) ? v : (/^0+([.,]0+)?$/.test(v) ? v : '+' + v); }
+  /* the difference exactly as he typed it: a number without a sign is never turned into a price increase */
+  function sign(v) { return str(v).trim(); }
   function pctOf(v) { var d = sign(v); return d ? d + (d.slice(-1) === '%' ? '' : '%') : ''; }
   function yn(v) { return v === 'yes' ? t('yes') : v === 'no' ? t('no') : v === 'unsure' ? t('unsure') : t('txtNot'); }
   function offered(key, options, shortName) {
@@ -487,17 +496,90 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     if (state.other.text) { out.push(''); out.push('3. ' + t('txtOther') + ': ' + state.other.text); }
     return out.join('\n');
   }
-  $('copy').addEventListener('click', function () {
-    var s = text(), done = $('copied'), area = $('copy-text');
-    var fallback = function () { area.value = s; area.hidden = false; area.focus(); area.select(); done.textContent = t('copyFail'); done.hidden = false; };
+  /* ---------- copying ---------- */
+  /* Two ways in the same tap. In-app browsers often refuse the Clipboard API, while execCommand on a
+     hidden textarea still copies there (checked in an embedded Chromium, 25.11.2026); writeText covers
+     browsers where execCommand stops working. done(true) as soon as either one succeeds. */
+  function copyText(s, done) {
+    var ok = false, finished = false, back = document.activeElement, ta = document.createElement('textarea');
+    var finish = function (v) { if (!finished) { finished = true; done(v); } };
+    ta.value = s;
+    ta.setAttribute('readonly', '');
+    ta.setAttribute('aria-hidden', 'true');
+    ta.setAttribute('tabindex', '-1');
+    ta.style.cssText = 'position:absolute;left:-9999px;top:' + (window.pageYOffset || document.documentElement.scrollTop || 0) + 'px;width:1px;height:1px;font-size:16px;border:0;padding:0;margin:0;-webkit-user-select:text;user-select:text';
+    document.body.appendChild(ta);
     try {
-      navigator.clipboard.writeText(s).then(function () { area.hidden = true; done.textContent = t('copied'); done.hidden = false; }, fallback);
-    } catch (e) { fallback(); }
+      try { ta.focus({ preventScroll: true }); } catch (e) {}
+      ta.select();
+      ta.setSelectionRange(0, s.length);
+      ok = document.execCommand('copy') === true;
+    } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    try { window.getSelection().removeAllRanges(); } catch (e) {}
+    try { if (back && back.focus) back.focus({ preventScroll: true }); } catch (e) {}
+    if (ok) finish(true);
+    var api = null;
+    try { api = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(s) : null; } catch (e) { api = null; }
+    if (api && api.then) {
+      api.then(function () { finish(true); }, function () { finish(ok); });
+      setTimeout(function () { finish(ok); }, 2500); /* some in-app browsers never settle the promise */
+    } else finish(ok);
+  }
+
+  var toastTimer = 0;
+  function toast(msg) {
+    var el = $('toast'), b = $('bar').getBoundingClientRect(), h = window.innerHeight;
+    /* sit just above the bar while it is stuck to the bottom, otherwise near the bottom edge */
+    el.style.bottom = b.bottom >= h - 2 && b.top < h ? Math.round(h - b.top + 12) + 'px' : 'calc(16px + env(safe-area-inset-bottom, 0px))';
+    el.textContent = msg;
+    if (document.hidden) clearTimeout(toastTimer); else hideToastLater();
+  }
+  function hideToastLater() {
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { $('toast').textContent = ''; }, 8000);
+  }
+  /* while WhatsApp is in front the page is hidden: keep the message until he is back */
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) clearTimeout(toastTimer); else if ($('toast').textContent) hideToastLater();
+  });
+
+  /* '' | 'copied' | 'stale' (edited after copying) | 'failed' (the box with the text is open) */
+  var copyState = '';
+  function copyRefresh(edited) {
+    var msg = $('copied'), area = $('copy-text');
+    if (edited && copyState === 'copied') copyState = 'stale';
+    if (copyState === 'failed') area.value = text();
+    var want = copyState ? t({ copied: 'copied', stale: 'copyStale', failed: 'copyFail' }[copyState]) : '';
+    if (msg.textContent !== want) msg.textContent = want;
+  }
+  $('copy').addEventListener('click', function () {
+    var s = text(), area = $('copy-text');
+    copyText(s, function (ok) {
+      copyState = ok ? 'copied' : 'failed';
+      area.hidden = ok;
+      copyRefresh(false);
+      if (ok) return;
+      try { area.focus({ preventScroll: true }); area.select(); area.setSelectionRange(0, area.value.length); } catch (e) {}
+      area.scrollIntoView({ block: 'center' });
+    });
   });
 
   /* ---------- sending ---------- */
-  /* wa.me with only a text opens WhatsApp and lets him pick the chat to send it to */
-  $('send').addEventListener('click', function () { this.href = 'https://wa.me/?text=' + encodeURIComponent(text()); });
+  /* api.whatsapp.com/send with only a text opens WhatsApp (an app link on Android and iPhone) and lets him
+     pick the chat. Unlike wa.me it keeps emoji when the request goes through the web. Same tab: in-app
+     browsers may drop target=_blank, and the draft is in localStorage if the page is left. The same tap
+     copies the answers too, so he can paste them if WhatsApp opens without the text. */
+  function waLink(s) {
+    var base = 'https://api.whatsapp.com/send?text=';
+    try { return base + encodeURIComponent(s); }
+    catch (e) { return base + encodeURIComponent(s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(^|[^\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '$1\uFFFD')); }
+  }
+  $('send').addEventListener('click', function () {
+    var s = text();
+    this.href = waLink(s);
+    copyText(s, function (ok) { toast(t(ok ? 'sentCopied' : 'sentNotCopied')); });
+  });
   var connecting = false;
   build();
   setStatus('local');
