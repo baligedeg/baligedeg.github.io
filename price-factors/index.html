@@ -81,13 +81,16 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .box:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
 .box input:focus-visible { outline: none; }
-.bar { position: sticky; bottom: 0; margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+.bar { position: sticky; bottom: 0; margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
   padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--bg); border-top: 1px solid var(--rule-strong); }
-.bar__text { display: grid; gap: 2px; min-width: 0; flex: 1 1 220px; }
+.bar__text { display: grid; gap: 2px; min-width: 0; flex: 1 1 80px; }
+@media (max-width: 560px) { .status { display: none; } }
 .progress { font: 500 15px/1.3 var(--font-body); }
 .status { font: 400 13px/1.3 var(--font-mono); color: var(--muted); }
 .copy { display: inline-flex; align-items: center; text-decoration: none; min-height: 44px; padding: 0 18px; border: 1px solid var(--pressed-bg); background: var(--pressed-bg); color: var(--pressed-fg); font: 500 13px/1 var(--font-body); letter-spacing: .09em; text-transform: uppercase; cursor: pointer; }
 .copy--quiet { background: var(--field); color: var(--fg); border-color: var(--rule-strong); }
+.after { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-top: 20px; }
+.after__text { margin: 0; flex: 1 1 260px; min-width: 0; font-size: 14px; color: var(--muted); }
 .copied { margin: 0; font-size: 14px; color: var(--muted); flex-basis: 100%; }
 .copy-text { width: 100%; min-height: 160px; margin-top: 8px; padding: 10px; border: 1px solid var(--rule-strong); background: var(--field); color: var(--fg); font: 400 13px/1.5 var(--font-mono); }
 .foot { margin: 0; padding-block: 18px 40px; font-size: 13px; color: var(--muted); }
@@ -116,6 +119,9 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       <span class="status" id="status" role="status" aria-live="polite"></span>
     </div>
     <a class="copy" id="send" href="https://wa.me/" target="_blank" rel="noopener"></a>
+  </div>
+  <div class="after">
+    <p class="after__text" id="t-copyHint"></p>
     <button type="button" class="copy copy--quiet" id="copy"></button>
     <p class="copied" id="copied" hidden></p>
     <textarea class="copy-text" id="copy-text" hidden readonly aria-label="Answers"></textarea>
@@ -166,7 +172,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       st_connecting: 'Connecting…', st_ready: 'Answers save by themselves', st_saving: 'Saving…', st_saved: 'All answers saved',
       st_local: 'Kept on this device until you send it', st_error: 'Not saved. Copy your answers and send them on WhatsApp.', st_slow: 'Saved answers can’t be loaded yet. You can keep going.',
       banner: 'This page can’t save your answers here. Fill it in, then tap “Copy all answers” and send them on WhatsApp.',
-      send: 'Send on WhatsApp', copy: 'Copy answers', copied: 'Copied. Paste them into WhatsApp.', copyFail: 'Couldn’t copy. Select the text below and copy it.',
+      send: 'Send on WhatsApp', copy: 'Copy answers', copyHint: 'If WhatsApp doesn’t open, copy the answers and paste them into our chat.', copied: 'Copied. Paste them into WhatsApp.', copyFail: 'Couldn’t copy. Select the text below and copy it.',
       foot: 'This page is only for Bali Gedeg. Nothing is sent until you tap “Send on WhatsApp”.',
       txtHead: 'Calculator price factors, answers', txtChanges: 'changes the price', txtNoChange: 'does not change the price', txtUnsure: 'not sure', txtNot: 'not answered',
       txtRight: 'right', txtWrong: 'changed', txtNote: 'Comment', txtOther: 'Anything else', txtOffer: 'Offered', txtNone: 'nothing ticked', txtOwn: 'own option'
@@ -208,7 +214,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       st_connecting: 'Menghubungkan…', st_ready: 'Jawaban tersimpan sendiri', st_saving: 'Menyimpan…', st_saved: 'Semua jawaban tersimpan',
       st_local: 'Tersimpan di perangkat ini sampai dikirim', st_error: 'Belum tersimpan. Salin jawaban dan kirim lewat WhatsApp.', st_slow: 'Jawaban tersimpan belum bisa dimuat. Bapak bisa tetap mengisi.',
       banner: 'Halaman ini tidak bisa menyimpan jawaban di sini. Isi dulu, lalu ketuk “Salin semua jawaban” dan kirim lewat WhatsApp.',
-      send: 'Kirim lewat WhatsApp', copy: 'Salin jawaban', copied: 'Tersalin. Tempel di WhatsApp.', copyFail: 'Tidak bisa menyalin. Pilih teks di bawah lalu salin.',
+      send: 'Kirim lewat WhatsApp', copy: 'Salin jawaban', copyHint: 'Jika WhatsApp tidak terbuka, salin jawaban lalu tempel di chat kami.', copied: 'Tersalin. Tempel di WhatsApp.', copyFail: 'Tidak bisa menyalin. Pilih teks di bawah lalu salin.',
       foot: 'Halaman ini hanya untuk Bali Gedeg. Tidak ada yang terkirim sebelum Bapak mengetuk “Kirim lewat WhatsApp”.',
       txtHead: 'Faktor harga kalkulator, jawaban', txtChanges: 'mengubah harga', txtNoChange: 'tidak mengubah harga', txtUnsure: 'belum tahu', txtNot: 'belum dijawab',
       txtRight: 'benar', txtWrong: 'diubah', txtNote: 'Catatan', txtOther: 'Hal lain', txtOffer: 'Ditawarkan', txtNone: 'belum dicentang', txtOwn: 'pilihan lain'
@@ -353,7 +359,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     form.appendChild(el('section', { class: 'item other', 'data-item': 'other' }, [
       el('label', { class: 'field', for: oid }, [el('span', { text: t('s3hint') }), el('textarea', { id: oid, 'data-key': 'other', 'data-field': 'text' })])]));
 
-    ['eyebrow', 'title', 'lead', 'howto', 'foot'].forEach(function (k) { $('t-' + k).textContent = t(k); });
+    ['eyebrow', 'title', 'lead', 'howto', 'foot', 'copyHint'].forEach(function (k) { $('t-' + k).textContent = t(k); });
     $('copy').textContent = t('copy'); $('send').textContent = t('send');
     document.documentElement.lang = lang;
     Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang)); });
@@ -471,7 +477,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     var E = state.extras;
     out.push('2.3 ' + t('extras') + '. ' + offered('extras', EXTRAS, function (k) { return t(k); }) + '. ' + cap(ok(E.ok)) + ': ' + EXTRAS.map(function (k) { return t(k) + ' ' + E[k].m2 + ' m², ' + E[k].share + '%'; }).join('; ') + (E.note ? '. ' + t('txtNote') + ': ' + E.note : ''));
     var D = state.design;
-    out.push('2.4 ' + t('design') + ': ' + t('designDesc') + ' ' + yn(D.free) + (D.designOnly ? '. ' + t('designOnly') + ': ' + D.designOnly : '') + (D.note ? '. ' + t('txtNote') + ': ' + D.note : ''));
+    out.push('2.4 ' + t('design') + ': ' + t('designDesc') + ' ' + cap(yn(D.free)) + (D.designOnly ? '. ' + t('designOnly') + ': ' + D.designOnly : '') + (D.note ? '. ' + t('txtNote') + ': ' + D.note : ''));
     var A = state.abroad, al = '2.5 ' + t('abroad') + ': ' + yn(A.offer);
     if (A.offer === 'yes') al += '. ' + [[t('kit'), A.kit], [t('container'), A.container], [t('perContainer'), A.perContainer], [t('supervision'), A.supervision], [t('time'), A.time]].filter(function (p) { return p[1]; }).map(function (p) { return p[0] + ' ' + p[1]; }).join('; ');
     if (A.note) al += '. ' + t('txtNote') + ': ' + A.note;
