@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculator Price Factors · Bali Gedeg</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../emblem.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Jost:wght@400;500&display=swap">
+<style>
+/* Layout: one form column on limewash, items parted by hairlines like the site's calculator, a sticky bar at the
+   bottom with progress, save state and copy. Bali Gedeg's brand: limewash, ink, corten; Jost, Golos Text, JetBrains Mono. */
+:root {
+  --bg: #F3F2EE; --field: #FFFFFF; --fg: #141412; --muted: #625E57;
+  --rule: rgba(20, 20, 18, .14); --rule-strong: rgba(20, 20, 18, .5);
+  --accent: #8E4B2C; --pressed-bg: #141412; --pressed-fg: #F3F2EE;
+  --font-display: "Jost", "Futura", "Avenir Next", Arial, sans-serif;
+  --font-body: "Golos Text", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141412; --field: #1E1D1A; --fg: #F3F2EE; --muted: #A6A298;
+    --rule: rgba(243, 242, 238, .16); --rule-strong: rgba(243, 242, 238, .55);
+    --accent: #D19470; --pressed-bg: #F3F2EE; --pressed-fg: #141412; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141412; --field: #1E1D1A; --fg: #F3F2EE; --muted: #A6A298;
+  --rule: rgba(243, 242, 238, .16); --rule-strong: rgba(243, 242, 238, .55);
+  --accent: #D19470; --pressed-bg: #F3F2EE; --pressed-fg: #141412; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--font-body); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 40px 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.head { display: grid; gap: 14px; padding-bottom: 28px; }
+.eyebrow { margin: 0; font: 500 12px/1.3 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 0; font: 400 clamp(32px, 7vw, 46px)/1.04 var(--font-display); letter-spacing: -.02em; text-wrap: balance; }
+.lead { margin: 0; font-size: 17px; max-width: 62ch; }
+.howto { margin: 0; color: var(--muted); font-size: 15px; max-width: 62ch; }
+.lang { display: flex; flex-wrap: wrap; gap: 8px; }
+.banner { margin: 0; padding: 12px 14px; border: 1px solid var(--accent); color: var(--fg); font-size: 15px; }
+h2 { margin: 0; padding-top: 36px; font: 400 clamp(24px, 4.6vw, 30px)/1.15 var(--font-display); letter-spacing: -.01em; text-wrap: balance; }
+.section-sub { margin: 8px 0 0; color: var(--muted); font-size: 15px; max-width: 62ch; }
+.item { display: grid; gap: 16px; padding-block: 26px; border-top: 1px solid var(--rule); }
+.section-head + .item { margin-top: 18px; }
+.item h3 { margin: 0; font: 500 21px/1.25 var(--font-display); }
+.num { font: 500 13px/1 var(--font-mono); color: var(--muted); margin-right: .55em; }
+.opts { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+.base { display: inline-block; margin-left: 6px; padding: 1px 6px; border: 1px solid var(--rule-strong); font: 500 11px/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.q { display: grid; gap: 8px; }
+.q__label { font-size: 15px; font-weight: 500; }
+.seg, .checks { display: flex; flex-wrap: wrap; gap: 8px; }
+button { font: inherit; color: inherit; }
+.seg button, .lang button {
+  min-height: 44px; padding: 0 18px; border: 1px solid var(--rule-strong); background: var(--field); color: var(--fg);
+  font: 500 15px/1 var(--font-body); cursor: pointer; transition: background-color .15s, color .15s;
+}
+.seg button[aria-pressed="true"], .lang button[aria-pressed="true"] { background: var(--pressed-bg); color: var(--pressed-fg); border-color: var(--pressed-bg); }
+/* a tick box: the option it names, in a chip the whole width of a finger */
+.check { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px 0 12px; border: 1px solid var(--rule-strong); background: var(--field); font-size: 15px; cursor: pointer; }
+.check input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); cursor: pointer; flex: none; }
+.check:has(input:checked) { border-color: var(--fg); box-shadow: inset 0 0 0 1px var(--fg); }
+.check:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.check input:focus-visible { outline: none; }
+.check .base { margin-left: 0; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field > span:first-child { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+.box { display: flex; align-items: stretch; border: 1px solid var(--rule-strong); background: var(--field); min-width: 0; }
+.box input { flex: 1; min-width: 0; height: 46px; padding: 0 12px; border: 0; background: transparent; color: var(--fg); font: 400 16px/1 var(--font-mono); }
+.box input.txt { font-family: var(--font-body); }
+.box i { display: flex; align-items: center; padding: 0 12px 0 4px; font: 400 14px/1 var(--font-mono); font-style: normal; color: var(--muted); white-space: nowrap; }
+.note input, .other textarea { width: 100%; border: 1px solid var(--rule-strong); background: var(--field); color: var(--fg); font: 400 16px/1.45 var(--font-body); }
+.note input { height: 46px; padding: 0 12px; }
+.other textarea { min-height: 120px; padding: 12px; resize: vertical; }
+.hint { margin: 0; font-size: 14px; color: var(--muted); }
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.box:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.box input:focus-visible { outline: none; }
+.bar { position: sticky; bottom: 0; margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+  padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--bg); border-top: 1px solid var(--rule-strong); }
+.bar__text { display: grid; gap: 2px; min-width: 0; flex: 1 1 220px; }
+.progress { font: 500 15px/1.3 var(--font-body); }
+.status { font: 400 13px/1.3 var(--font-mono); color: var(--muted); }
+.copy { display: inline-flex; align-items: center; text-decoration: none; min-height: 44px; padding: 0 18px; border: 1px solid var(--pressed-bg); background: var(--pressed-bg); color: var(--pressed-fg); font: 500 13px/1 var(--font-body); letter-spacing: .09em; text-transform: uppercase; cursor: pointer; }
+.copy--quiet { background: var(--field); color: var(--fg); border-color: var(--rule-strong); }
+.copied { margin: 0; font-size: 14px; color: var(--muted); flex-basis: 100%; }
+.copy-text { width: 100%; min-height: 160px; margin-top: 8px; padding: 10px; border: 1px solid var(--rule-strong); background: var(--field); color: var(--fg); font: 400 13px/1.5 var(--font-mono); }
+.foot { margin: 0; padding-block: 18px 40px; font-size: 13px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .seg button, .lang button { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <p class="eyebrow" id="t-eyebrow">Bali Gedeg · website calculator</p>
+    <h1 id="t-title">What changes the price?</h1>
+    <p class="lead" id="t-lead"></p>
+    <div class="lang" role="group" aria-label="Language / Bahasa">
+      <button type="button" data-lang="en" aria-pressed="true">English</button>
+      <button type="button" data-lang="id" aria-pressed="false">Bahasa Indonesia</button>
+    </div>
+    <p class="howto" id="t-howto"></p>
+    <p class="banner" id="banner" hidden></p>
+  </header>
+
+  <main id="form"></main>
+
+  <div class="bar" id="bar">
+    <div class="bar__text">
+      <span class="progress" id="progress"></span>
+      <span class="status" id="status" role="status" aria-live="polite"></span>
+    </div>
+    <a class="copy" id="send" href="https://wa.me/" target="_blank" rel="noopener"></a>
+    <button type="button" class="copy copy--quiet" id="copy"></button>
+    <p class="copied" id="copied" hidden></p>
+    <textarea class="copy-text" id="copy-text" hidden readonly aria-label="Answers"></textarea>
+  </div>
+  <p class="foot" id="t-foot"></p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- words ---------- */
+  var T = {
+    en: {
+      eyebrow: 'Bali Gedeg · website calculator',
+      title: 'What changes the price?',
+      lead: 'The price calculator on our new website now uses your estimates of 13 November: 10, 12 and 13.5 million rupiah per m² for Basic, Standard and Premium finish. Please tick what you offer, write anything that is missing, and mark which choices change the price, and by how much.',
+      howto: 'Tick the options you offer and tap Yes, No or Not sure for each item. Your answers stay on this device while you fill it in. When you are done, tap “Send on WhatsApp” at the bottom and send them to us.',
+      s1: 'What do you offer, and what changes the price?',
+      s1sub: 'Tick every option you offer and write your own if it is missing. Then say whether the choice makes the price per m² higher or lower. If yes, write the difference against the first option, in %. For example: concrete −5%, timber +10%.',
+      s2: 'Please check our numbers',
+      s2sub: 'These are the numbers the calculator uses now. Correct any that are wrong.',
+      s3: 'Anything else that changes the price?',
+      s3hint: 'For example the slope of the plot, access for trucks, distance from Denpasar, permits.',
+      base: 'base', offerQ: 'Which of these do you offer? Tick all that apply.', own: 'Your own option',
+      changes: 'Changes the price?', yes: 'Yes', no: 'No', unsure: 'Not sure', right: 'Is that right?',
+      changed: 'No, I changed them', note: 'Comment (optional)', pct: '%', idr: 'IDR', m2: 'm²', perm2: 'IDR per m²',
+      type: 'Type of house', villa: 'Villa', lumbung: 'Lumbung', traditional: 'Traditional house (Balinese, Toraja, Minangkabau)', traditionalShort: 'Traditional house',
+      style: 'Style', classic: 'Classic', loft: 'Loft', modern: 'Modern',
+      floors: 'Number of floors', one: '1 floor', two: '2 floors',
+      structure: 'Structure', mixed: 'Timber and concrete', timber: 'Timber', concrete: 'Concrete',
+      roof: 'Roof', alang: 'Alang-alang thatch', tile: 'Clay tile', sirap: 'Ironwood shingles (sirap)',
+      ph_type: 'e.g. Joglo', ph_style: 'e.g. Tropical', ph_floors: 'e.g. 3 floors', ph_structure: 'e.g. steel, bamboo', ph_roof: 'e.g. metal, flat concrete roof', ph_extras: 'e.g. garden, fence, carport',
+      finish: 'Price per m² by finish', finishDesc: 'From your estimates of 13 November, as Basic, Standard and Premium finish.', basic: 'Basic', standard: 'Standard', premium: 'Premium',
+      finishNote: 'What is different between the three? (floors, joinery, bathrooms, stone…)',
+      furniture: 'Furniture and decor', furnitureDesc: 'You told us that furniture and decor come to about 40% of the house price. The calculator now adds 40%.',
+      furniturePct: 'Share of the house price', kitchen: 'Is the kitchen set included?',
+      extras: 'Pool, terrace deck and bale', extrasDesc: 'Counted like your estimate: a share of the price per m², for a typical size.',
+      extrasQ: 'Which extras do you offer? Tick all that apply.',
+      pool: 'Pool', deck: 'Terrace deck', bale: 'Bale gazebo', size: 'Typical size', share: 'Share of the price per m²',
+      design: 'Design and drawings', designDesc: 'On the site we say: the design is free when Bali Gedeg builds the house.',
+      designOnly: 'Design only, when the client builds with another contractor: the price', designOnlyHint: 'per m² or a % of the construction',
+      abroad: 'Houses shipped abroad (knock-down)', abroadQ: 'Do we offer this today?', abroadNo: 'Then we remove this option from the calculator.',
+      kit: 'Kit price per m² at our workshop', container: 'One container with packing', perContainer: 'House area per container',
+      supervision: 'Assembly supervision, % of the house', time: 'Production and shipping time',
+      site: 'Prices on the website', siteQ: 'Is it OK that the website shows these approximate prices?', updateEvery: 'How often do your prices change, so we know when to update them?',
+      progress: '{n} of {total} answered',
+      st_connecting: 'Connecting…', st_ready: 'Answers save by themselves', st_saving: 'Saving…', st_saved: 'All answers saved',
+      st_local: 'Kept on this device until you send it', st_error: 'Not saved. Copy your answers and send them on WhatsApp.', st_slow: 'Saved answers can’t be loaded yet. You can keep going.',
+      banner: 'This page can’t save your answers here. Fill it in, then tap “Copy all answers” and send them on WhatsApp.',
+      send: 'Send on WhatsApp', copy: 'Copy answers', copied: 'Copied. Paste them into WhatsApp.', copyFail: 'Couldn’t copy. Select the text below and copy it.',
+      foot: 'This page is only for Bali Gedeg. Nothing is sent until you tap “Send on WhatsApp”.',
+      txtHead: 'Calculator price factors, answers', txtChanges: 'changes the price', txtNoChange: 'does not change the price', txtUnsure: 'not sure', txtNot: 'not answered',
+      txtRight: 'right', txtWrong: 'changed', txtNote: 'Comment', txtOther: 'Anything else', txtOffer: 'Offered', txtNone: 'nothing ticked', txtOwn: 'own option'
+    },
+    id: {
+      eyebrow: 'Bali Gedeg · kalkulator situs web',
+      title: 'Apa yang mengubah harga?',
+      lead: 'Kalkulator harga di situs baru kita sekarang memakai estimasi Bapak tanggal 13 November: 10, 12, dan 13,5 juta rupiah per m² untuk finishing Basic, Standard, dan Premium. Mohon centang yang Bapak tawarkan, tulis yang belum ada, dan tandai pilihan yang mengubah harga, serta seberapa besar.',
+      howto: 'Centang pilihan yang Bapak tawarkan dan ketuk Ya, Tidak, atau Belum tahu untuk setiap poin. Jawaban tetap tersimpan di perangkat ini selama Bapak mengisi. Setelah selesai, ketuk “Kirim lewat WhatsApp” di bawah dan kirim ke kami.',
+      s1: 'Apa yang Bapak tawarkan, dan apa yang mengubah harga?',
+      s1sub: 'Centang setiap pilihan yang Bapak tawarkan dan tulis sendiri jika belum ada. Lalu tandai apakah pilihan itu membuat harga per m² lebih tinggi atau lebih rendah. Jika ya, tulis selisihnya dibandingkan pilihan pertama, dalam %. Contoh: beton −5%, kayu +10%.',
+      s2: 'Mohon cek angka kami',
+      s2sub: 'Ini angka yang dipakai kalkulator sekarang. Mohon perbaiki yang salah.',
+      s3: 'Ada hal lain yang mengubah harga?',
+      s3hint: 'Misalnya kemiringan lahan, akses truk, jarak dari Denpasar, izin.',
+      base: 'dasar', offerQ: 'Mana saja yang Bapak tawarkan? Centang semua yang sesuai.', own: 'Pilihan lain (tulis sendiri)',
+      changes: 'Mengubah harga?', yes: 'Ya', no: 'Tidak', unsure: 'Belum tahu', right: 'Sudah benar?',
+      changed: 'Tidak, sudah saya ubah', note: 'Catatan (opsional)', pct: '%', idr: 'Rp', m2: 'm²', perm2: 'Rp per m²',
+      type: 'Jenis rumah', villa: 'Vila', lumbung: 'Lumbung', traditional: 'Rumah tradisional (Bali, Toraja, Minangkabau)', traditionalShort: 'Rumah tradisional',
+      style: 'Gaya', classic: 'Klasik', loft: 'Loft', modern: 'Modern',
+      floors: 'Jumlah lantai', one: '1 lantai', two: '2 lantai',
+      structure: 'Struktur', mixed: 'Kayu dan beton', timber: 'Kayu', concrete: 'Beton',
+      roof: 'Atap', alang: 'Alang-alang', tile: 'Genteng tanah liat', sirap: 'Sirap kayu besi (ulin)',
+      ph_type: 'mis. Joglo', ph_style: 'mis. Tropis', ph_floors: 'mis. 3 lantai', ph_structure: 'mis. baja, bambu', ph_roof: 'mis. atap metal, dak beton', ph_extras: 'mis. taman, pagar, carport',
+      finish: 'Harga per m² menurut finishing', finishDesc: 'Dari estimasi Bapak tanggal 13 November, sebagai finishing Basic, Standard, dan Premium.', basic: 'Basic', standard: 'Standard', premium: 'Premium',
+      finishNote: 'Apa bedanya ketiganya? (lantai, kusen dan pintu, kamar mandi, batu…)',
+      furniture: 'Furnitur dan dekorasi', furnitureDesc: 'Bapak menyebut furnitur dan dekorasi sekitar 40% dari harga rumah. Kalkulator sekarang menambahkan 40%.',
+      furniturePct: 'Bagian dari harga rumah', kitchen: 'Apakah kitchen set sudah termasuk?',
+      extras: 'Kolam renang, dek teras, dan bale', extrasDesc: 'Dihitung seperti di estimasi Bapak: bagian dari harga per m², untuk ukuran yang umum.',
+      extrasQ: 'Tambahan apa saja yang Bapak tawarkan? Centang semua yang sesuai.',
+      pool: 'Kolam renang', deck: 'Dek teras', bale: 'Gazebo bale', size: 'Ukuran umum', share: 'Bagian dari harga per m²',
+      design: 'Desain dan gambar kerja', designDesc: 'Di situs kami menulis: desain gratis jika rumah dibangun oleh Bali Gedeg.',
+      designOnly: 'Desain saja, jika klien membangun dengan kontraktor lain: harganya', designOnlyHint: 'per m² atau % dari biaya pembangunan',
+      abroad: 'Rumah knock-down yang dikirim ke luar negeri', abroadQ: 'Apakah kita menawarkan ini sekarang?', abroadNo: 'Kalau begitu, pilihan ini kami hapus dari kalkulator.',
+      kit: 'Harga paket per m² di workshop kita', container: 'Satu kontainer termasuk pengemasan', perContainer: 'Luas rumah per kontainer',
+      supervision: 'Pengawasan perakitan, % dari harga rumah', time: 'Waktu produksi dan pengiriman',
+      site: 'Harga di situs web', siteQ: 'Apakah boleh situs menampilkan harga perkiraan ini?', updateEvery: 'Seberapa sering harga Bapak berubah, agar kami tahu kapan memperbaruinya?',
+      progress: '{n} dari {total} sudah dijawab',
+      st_connecting: 'Menghubungkan…', st_ready: 'Jawaban tersimpan sendiri', st_saving: 'Menyimpan…', st_saved: 'Semua jawaban tersimpan',
+      st_local: 'Tersimpan di perangkat ini sampai dikirim', st_error: 'Belum tersimpan. Salin jawaban dan kirim lewat WhatsApp.', st_slow: 'Jawaban tersimpan belum bisa dimuat. Bapak bisa tetap mengisi.',
+      banner: 'Halaman ini tidak bisa menyimpan jawaban di sini. Isi dulu, lalu ketuk “Salin semua jawaban” dan kirim lewat WhatsApp.',
+      send: 'Kirim lewat WhatsApp', copy: 'Salin jawaban', copied: 'Tersalin. Tempel di WhatsApp.', copyFail: 'Tidak bisa menyalin. Pilih teks di bawah lalu salin.',
+      foot: 'Halaman ini hanya untuk Bali Gedeg. Tidak ada yang terkirim sebelum Bapak mengetuk “Kirim lewat WhatsApp”.',
+      txtHead: 'Faktor harga kalkulator, jawaban', txtChanges: 'mengubah harga', txtNoChange: 'tidak mengubah harga', txtUnsure: 'belum tahu', txtNot: 'belum dijawab',
+      txtRight: 'benar', txtWrong: 'diubah', txtNote: 'Catatan', txtOther: 'Hal lain', txtOffer: 'Ditawarkan', txtNone: 'belum dicentang', txtOwn: 'pilihan lain'
+    }
+  };
+
+  /* ---------- what is asked ---------- */
+  var FACTORS = [
+    { key: 'type', title: 'type', options: ['villa', 'lumbung', 'traditional'] },
+    { key: 'style', title: 'style', options: ['classic', 'loft', 'modern'] },
+    { key: 'floors', title: 'floors', options: ['one', 'two'] },
+    { key: 'structure', title: 'structure', options: ['mixed', 'timber', 'concrete'] },
+    { key: 'roof', title: 'roof', options: ['alang', 'tile', 'sirap'] }
+  ];
+  var EXTRAS = ['pool', 'deck', 'bale'];
+  var factor = function () { return { offer: {}, own: '', affects: '', diff: {}, note: '' }; };
+  var DEFAULTS = {
+    type: factor(), style: factor(), floors: factor(), structure: factor(), roof: factor(),
+    finish: { ok: '', prices: { basic: '10 000 000', standard: '12 000 000', premium: '13 500 000' }, note: '' },
+    furniture: { ok: '', pct: '40', kitchen: '', note: '' },
+    extras: { offer: {}, own: '', ok: '', pool: { m2: '30', share: '90' }, deck: { m2: '40', share: '45' }, bale: { m2: '16', share: '100' }, note: '' },
+    design: { free: '', designOnly: '', note: '' },
+    abroad: { offer: '', kit: '', container: '95 000 000', perContainer: '60', supervision: '10', time: '', note: '' },
+    site: { show: '', updateEvery: '', note: '' },
+    other: { text: '' }
+  };
+  var ANSWER_FIELD = { type: 'affects', style: 'affects', floors: 'affects', structure: 'affects', roof: 'affects',
+    finish: 'ok', furniture: 'ok', extras: 'ok', design: 'free', abroad: 'offer', site: 'show' };
+  var TOTAL = Object.keys(ANSWER_FIELD).length;
+  var MAPS = { diff: 1 }; // free-keyed maps of strings (an option's difference); «offer» is one too where it is an object
+
+  /* ---------- state ---------- */
+  var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+  var state = clone(DEFAULTS);
+  var lang = 'en';
+  try { var savedLang = localStorage.getItem('bg-price-factors-lang'); if (savedLang === 'id' || savedLang === 'en') lang = savedLang; } catch (e) {}
+  try { var draft = JSON.parse(localStorage.getItem('bg-price-factors-draft') || 'null'); if (draft && typeof draft === 'object') Object.keys(DEFAULTS).forEach(function (k) { if (draft[k]) state[k] = merge(clone(DEFAULTS[k]), draft[k]); }); } catch (e) {}
+
+  function str(v) { return v == null ? '' : String(v).slice(0, 2000); }
+  function strMap(m) { var d = {}; if (m && typeof m === 'object') Object.keys(m).slice(0, 12).forEach(function (o) { d[o] = str(m[o]); }); return d; }
+  /* the stored body, laid over the defaults' shape: only known fields, every value a string */
+  function merge(base, data) {
+    if (!data || typeof data !== 'object') return base;
+    Object.keys(base).forEach(function (f) {
+      if (!(f in data)) return;
+      if (MAPS[f] || (f === 'offer' && base.offer && typeof base.offer === 'object')) base[f] = strMap(data[f]);
+      else if (base[f] && typeof base[f] === 'object') base[f] = merge(base[f], data[f]);
+      else base[f] = str(data[f]);
+    });
+    return base;
+  }
+  function getPath(o, path) { return path.split('.').reduce(function (a, p) { return a == null ? a : a[p]; }, o); }
+  function setPath(o, path, v) { var ps = path.split('.'), last = ps.pop(), t = o; ps.forEach(function (p) { if (!t[p] || typeof t[p] !== 'object') t[p] = {}; t = t[p]; }); t[last] = v; }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var t = function (k) { return (T[lang] && T[lang][k]) || T.en[k] || k; };
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (a) { if (a === 'text') n.textContent = attrs[a]; else n.setAttribute(a, attrs[a]); });
+    (kids || []).forEach(function (k) { if (k) n.appendChild(typeof k === 'string' ? document.createTextNode(k) : k); });
+    return n;
+  }
+
+  /* ---------- building the form ---------- */
+  function seg(key, field, values, labelKey) {
+    var lab = el('span', { class: 'q__label', id: 'q-' + key + '-' + field, text: t(labelKey) });
+    var group = el('div', { class: 'seg', role: 'group', 'aria-labelledby': 'q-' + key + '-' + field });
+    values.forEach(function (v) { group.appendChild(el('button', { type: 'button', 'data-key': key, 'data-field': field, 'data-value': v[0], 'aria-pressed': 'false', text: t(v[1]) })); });
+    return el('div', { class: 'q' }, [lab, group]);
+  }
+  /* tick boxes for the options, the first marked as the base of the % differences, and a line for an option of his own */
+  function checks(key, options, qKey, phKey, baseFirst) {
+    var lab = el('span', { class: 'q__label', id: 'q-' + key + '-offer', text: t(qKey) });
+    var group = el('div', { class: 'checks', role: 'group', 'aria-labelledby': 'q-' + key + '-offer' });
+    options.forEach(function (o, j) {
+      group.appendChild(el('label', { class: 'check' }, [
+        el('input', { type: 'checkbox', 'data-key': key, 'data-field': 'offer.' + o }),
+        el('span', { text: t(o) }),
+        baseFirst && j === 0 ? el('span', { class: 'base', text: t('base') }) : null
+      ]));
+    });
+    return el('div', { class: 'q' }, [lab, group, input(key, 'own', t('own'), '', { text: true, placeholder: t(phKey) })]);
+  }
+  function input(key, field, label, unit, opts) {
+    opts = opts || {};
+    var id = 'f-' + key + '-' + field.replace(/\./g, '-');
+    var inp = el('input', { id: id, 'data-key': key, 'data-field': field, inputmode: opts.text ? 'text' : 'decimal', autocomplete: 'off' });
+    if (opts.text) inp.className = 'txt';
+    if (opts.placeholder) inp.setAttribute('placeholder', opts.placeholder);
+    var box = el('span', { class: 'box' }, [inp, unit ? el('i', { 'aria-hidden': 'true', text: unit }) : null]);
+    var lab = el('span', { text: label });
+    if (opts.labelFor) lab.setAttribute('data-own-label', opts.labelFor);
+    return el('label', { class: 'field', for: id }, [lab, box]);
+  }
+  function note(key, labelKey) {
+    var id = 'f-' + key + '-note';
+    return el('label', { class: 'field note', for: id }, [el('span', { text: t(labelKey || 'note') }), el('input', { id: id, 'data-key': key, 'data-field': 'note', autocomplete: 'off' })]);
+  }
+  var YNU = [['yes', 'yes'], ['no', 'no'], ['unsure', 'unsure']];
+  var YN = [['yes', 'yes'], ['no', 'no']];
+
+  function build() {
+    var form = $('form'); form.textContent = '';
+    form.appendChild(el('div', { class: 'section-head' }, [el('h2', { text: '1. ' + t('s1') }), el('p', { class: 'section-sub', text: t('s1sub') })]));
+    FACTORS.forEach(function (f, i) {
+      var diffs = el('div', { class: 'fields', 'data-show': f.key + ':affects:yes' });
+      f.options.slice(1).forEach(function (o) { diffs.appendChild(input(f.key, 'diff.' + o, t(o === 'traditional' ? 'traditionalShort' : o), '%', { placeholder: '+10' })); });
+      var ownDiff = input(f.key, 'diff.own', t('own'), '%', { placeholder: '+10', labelFor: f.key });
+      ownDiff.setAttribute('data-show-own', f.key);
+      diffs.appendChild(ownDiff);
+      form.appendChild(el('section', { class: 'item', 'data-item': f.key }, [
+        el('h3', {}, [el('span', { class: 'num', text: '1.' + (i + 1) }), t(f.title)]),
+        checks(f.key, f.options, 'offerQ', 'ph_' + f.key, true),
+        seg(f.key, 'affects', YNU, 'changes'), diffs, note(f.key)
+      ]));
+    });
+
+    form.appendChild(el('div', { class: 'section-head' }, [el('h2', { text: '2. ' + t('s2') }), el('p', { class: 'section-sub', text: t('s2sub') })]));
+    var n = 0, head = function (titleKey, descKey) { n++; return el('div', {}, [el('h3', {}, [el('span', { class: 'num', text: '2.' + n }), t(titleKey)]), descKey ? el('p', { class: 'opts', text: t(descKey) }) : null]); };
+    form.appendChild(el('section', { class: 'item', 'data-item': 'finish' }, [head('finish', 'finishDesc'),
+      el('div', { class: 'fields' }, ['basic', 'standard', 'premium'].map(function (k) { return input('finish', 'prices.' + k, t(k), t('perm2')); })),
+      seg('finish', 'ok', [['yes', 'yes'], ['no', 'changed']], 'right'), note('finish', 'finishNote')]));
+    form.appendChild(el('section', { class: 'item', 'data-item': 'furniture' }, [head('furniture', 'furnitureDesc'),
+      el('div', { class: 'fields' }, [input('furniture', 'pct', t('furniturePct'), '%')]),
+      seg('furniture', 'ok', [['yes', 'yes'], ['no', 'changed']], 'right'), seg('furniture', 'kitchen', YNU, 'kitchen'), note('furniture')]));
+    var ex = el('div', { class: 'fields' });
+    EXTRAS.forEach(function (k) { ex.appendChild(input('extras', k + '.m2', t(k) + ' · ' + t('size'), t('m2'))); ex.appendChild(input('extras', k + '.share', t(k) + ' · ' + t('share'), '%')); });
+    form.appendChild(el('section', { class: 'item', 'data-item': 'extras' }, [head('extras', 'extrasDesc'), checks('extras', EXTRAS, 'extrasQ', 'ph_extras', false),
+      ex, seg('extras', 'ok', [['yes', 'yes'], ['no', 'changed']], 'right'), note('extras')]));
+    form.appendChild(el('section', { class: 'item', 'data-item': 'design' }, [head('design', 'designDesc'), seg('design', 'free', YN, 'right'),
+      el('div', { class: 'fields' }, [input('design', 'designOnly', t('designOnly'), '', { text: true, placeholder: t('designOnlyHint') })]), note('design')]));
+    var ab = el('div', { class: 'fields', 'data-show': 'abroad:offer:yes' }, [
+      input('abroad', 'kit', t('kit'), t('perm2')), input('abroad', 'container', t('container'), t('idr')), input('abroad', 'perContainer', t('perContainer'), t('m2')),
+      input('abroad', 'supervision', t('supervision'), '%'), input('abroad', 'time', t('time'), '', { text: true })]);
+    form.appendChild(el('section', { class: 'item', 'data-item': 'abroad' }, [head('abroad'), seg('abroad', 'offer', YNU, 'abroadQ'), ab,
+      el('p', { class: 'hint', 'data-show': 'abroad:offer:no', text: t('abroadNo') }), note('abroad')]));
+    form.appendChild(el('section', { class: 'item', 'data-item': 'site' }, [head('site'), seg('site', 'show', YN, 'siteQ'),
+      el('div', { class: 'fields' }, [input('site', 'updateEvery', t('updateEvery'), '', { text: true })]), note('site')]));
+
+    var oid = 'f-other-text';
+    form.appendChild(el('div', { class: 'section-head' }, [el('h2', { text: '3. ' + t('s3') })]));
+    form.appendChild(el('section', { class: 'item other', 'data-item': 'other' }, [
+      el('label', { class: 'field', for: oid }, [el('span', { text: t('s3hint') }), el('textarea', { id: oid, 'data-key': 'other', 'data-field': 'text' })])]));
+
+    ['eyebrow', 'title', 'lead', 'howto', 'foot'].forEach(function (k) { $('t-' + k).textContent = t(k); });
+    $('copy').textContent = t('copy'); $('send').textContent = t('send');
+    document.documentElement.lang = lang;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang)); });
+    Object.keys(DEFAULTS).forEach(fill);
+    renderStatus(); progress();
+    if (localOnly) showBanner();
+  }
+
+  /* values into the form (never into the field being typed in) */
+  function fill(key) {
+    var s = state[key];
+    Array.prototype.forEach.call(document.querySelectorAll('[data-key="' + key + '"]'), function (n) {
+      var f = n.getAttribute('data-field'), v = getPath(s, f);
+      if (n.tagName === 'BUTTON') n.setAttribute('aria-pressed', String(v === n.getAttribute('data-value')));
+      else if (n.type === 'checkbox') n.checked = v === 'yes';
+      else if (n !== document.activeElement) n.value = v == null ? '' : v;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-show^="' + key + ':"]'), function (n) {
+      var p = n.getAttribute('data-show').split(':'); n.hidden = getPath(s, p[1]) !== p[2];
+    });
+    /* the difference for his own option: only once he has named it, under its own name */
+    var own = (s.own || '').trim();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-show-own="' + key + '"]'), function (n) { n.hidden = !own; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-own-label="' + key + '"]'), function (n) { n.textContent = own || t('own'); });
+  }
+  function answered() { return Object.keys(ANSWER_FIELD).filter(function (k) { return !!state[k][ANSWER_FIELD[k]]; }).length; }
+  function progress() { $('progress').textContent = t('progress').replace('{n}', answered()).replace('{total}', TOTAL); }
+
+  /* ---------- saving ---------- */
+  var db = null, localOnly = false, statusKey = 'local', dirty = {}, inflight = {}, again = {}, timers = {};
+  function setStatus(k) { statusKey = k; renderStatus(); }
+  function renderStatus() { $('status').textContent = t('st_' + statusKey); }
+  function showBanner() { var b = $('banner'); b.textContent = t('banner'); b.hidden = false; }
+  function saveDraft() { try { localStorage.setItem('bg-price-factors-draft', JSON.stringify(state)); } catch (e) {} }
+  function busy() { return Object.keys(timers).some(function (k) { return timers[k]; }) || Object.keys(inflight).some(function (k) { return inflight[k]; }); }
+
+  function changed(key) {
+    dirty[key] = true; saveDraft(); progress();
+    if (localOnly || !db) { setStatus(db === null && !connecting ? 'local' : statusKey); return; }
+    setStatus('saving');
+    clearTimeout(timers[key]); timers[key] = setTimeout(function () { timers[key] = null; flush(key); }, 700);
+  }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function write(key, body) { return db.doc('answers/' + key).set(body); }
+  function flush(key) {
+    if (inflight[key]) { again[key] = true; return; }
+    inflight[key] = true; dirty[key] = false;
+    var body = clone(state[key]); body.t = new Date().toISOString();
+    write(key, body).catch(function (e) {
+      if (e && e.code === 'unavailable') return wait(600 + Math.random() * 900).then(function () { return write(key, body); });
+      throw e;
+    }).then(function () {
+      inflight[key] = false;
+      if (again[key]) { again[key] = false; flush(key); return; }
+      if (!busy()) setStatus('saved');
+    }, function (e) {
+      inflight[key] = false; dirty[key] = true;
+      var code = e && e.code;
+      if (code === 'invalid_argument' || code === 'not_granted' || code === 'revoked' || code === 'capability_disabled' || code === 'capability_removed') { localOnly = true; showBanner(); setStatus('local'); }
+      else setStatus('error');
+    });
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener('click', function (e) {
+    var lb = e.target.closest('[data-lang]');
+    if (lb) { lang = lb.getAttribute('data-lang'); try { localStorage.setItem('bg-price-factors-lang', lang); } catch (x) {} build(); return; }
+    var b = e.target.closest('button[data-key]');
+    if (!b) return;
+    var key = b.getAttribute('data-key'), f = b.getAttribute('data-field'), v = b.getAttribute('data-value');
+    setPath(state[key], f, getPath(state[key], f) === v ? '' : v); // a second tap clears the answer
+    fill(key); changed(key);
+  });
+  function onField(e) {
+    var n = e.target; if (!n.getAttribute || !n.getAttribute('data-key')) return;
+    var key = n.getAttribute('data-key'), f = n.getAttribute('data-field');
+    var v = n.type === 'checkbox' ? (n.checked ? 'yes' : '') : str(n.value);
+    if (getPath(state[key], f) === v) return; // a checkbox fires both input and change
+    setPath(state[key], f, v);
+    if (n.type === 'checkbox' || f === 'own') fill(key);
+    changed(key);
+  }
+  document.addEventListener('input', onField);
+  document.addEventListener('change', onField);
+
+  /* ---------- copy ---------- */
+  function sign(v) { v = str(v).trim(); if (!v) return ''; return /^[+\-−]/.test(v) ? v : (/^0+([.,]0+)?$/.test(v) ? v : '+' + v); }
+  function pctOf(v) { var d = sign(v); return d ? d + (d.slice(-1) === '%' ? '' : '%') : ''; }
+  function yn(v) { return v === 'yes' ? t('yes') : v === 'no' ? t('no') : v === 'unsure' ? t('unsure') : t('txtNot'); }
+  function offered(key, options, shortName) {
+    var s = state[key], names = options.filter(function (o) { return s.offer[o] === 'yes'; }).map(shortName);
+    var own = (s.own || '').trim(); if (own) names.push(own + ' (' + t('txtOwn') + ')');
+    return t('txtOffer') + ': ' + (names.length ? names.join(', ') : t('txtNone'));
+  }
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function short(o) { return t(o === 'traditional' ? 'traditionalShort' : o); }
+  function text() {
+    var out = [t('txtHead') + ' (' + new Date().toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB') + ')', ''];
+    FACTORS.forEach(function (f, i) {
+      var s = state[f.key], line = '1.' + (i + 1) + ' ' + t(f.title) + '. ' + offered(f.key, f.options, short) + '. ';
+      if (s.affects === 'yes') {
+        var parts = f.options.slice(1).map(function (o) { var d = pctOf(s.diff[o]); return d ? short(o) + ' ' + d : ''; });
+        var own = (s.own || '').trim(), od = pctOf(s.diff.own);
+        if (own && od) parts.push(own + ' ' + od);
+        parts = parts.filter(Boolean);
+        line += cap(t('txtChanges')) + (parts.length ? ': ' + parts.join(', ') : '');
+      } else line += cap(s.affects === 'no' ? t('txtNoChange') : s.affects === 'unsure' ? t('txtUnsure') : t('txtNot'));
+      if (s.note) line += '. ' + t('txtNote') + ': ' + s.note;
+      out.push(line);
+    });
+    var F = state.finish, ok = function (v) { return v === 'yes' ? t('txtRight') : v === 'no' ? t('txtWrong') : t('txtNot'); };
+    out.push('2.1 ' + t('finish') + ': ' + ok(F.ok) + '. ' + t('basic') + ' ' + F.prices.basic + ', ' + t('standard') + ' ' + F.prices.standard + ', ' + t('premium') + ' ' + F.prices.premium + ' ' + t('perm2') + (F.note ? '. ' + t('txtNote') + ': ' + F.note : ''));
+    var U = state.furniture;
+    out.push('2.2 ' + t('furniture') + ': ' + ok(U.ok) + ', ' + U.pct + '%. ' + t('kitchen') + ' ' + yn(U.kitchen) + (U.note ? '. ' + t('txtNote') + ': ' + U.note : ''));
+    var E = state.extras;
+    out.push('2.3 ' + t('extras') + '. ' + offered('extras', EXTRAS, function (k) { return t(k); }) + '. ' + cap(ok(E.ok)) + ': ' + EXTRAS.map(function (k) { return t(k) + ' ' + E[k].m2 + ' m², ' + E[k].share + '%'; }).join('; ') + (E.note ? '. ' + t('txtNote') + ': ' + E.note : ''));
+    var D = state.design;
+    out.push('2.4 ' + t('design') + ': ' + t('designDesc') + ' ' + yn(D.free) + (D.designOnly ? '. ' + t('designOnly') + ': ' + D.designOnly : '') + (D.note ? '. ' + t('txtNote') + ': ' + D.note : ''));
+    var A = state.abroad, al = '2.5 ' + t('abroad') + ': ' + yn(A.offer);
+    if (A.offer === 'yes') al += '. ' + [[t('kit'), A.kit], [t('container'), A.container], [t('perContainer'), A.perContainer], [t('supervision'), A.supervision], [t('time'), A.time]].filter(function (p) { return p[1]; }).map(function (p) { return p[0] + ' ' + p[1]; }).join('; ');
+    if (A.note) al += '. ' + t('txtNote') + ': ' + A.note;
+    out.push(al);
+    var S = state.site;
+    out.push('2.6 ' + t('site') + ': ' + yn(S.show) + (S.updateEvery ? '. ' + t('updateEvery') + ' ' + S.updateEvery : '') + (S.note ? '. ' + t('txtNote') + ': ' + S.note : ''));
+    if (state.other.text) { out.push(''); out.push('3. ' + t('txtOther') + ': ' + state.other.text); }
+    return out.join('\n');
+  }
+  $('copy').addEventListener('click', function () {
+    var s = text(), done = $('copied'), area = $('copy-text');
+    var fallback = function () { area.value = s; area.hidden = false; area.focus(); area.select(); done.textContent = t('copyFail'); done.hidden = false; };
+    try {
+      navigator.clipboard.writeText(s).then(function () { area.hidden = true; done.textContent = t('copied'); done.hidden = false; }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  /* ---------- sending ---------- */
+  /* wa.me with only a text opens WhatsApp and lets him pick the chat to send it to */
+  $('send').addEventListener('click', function () { this.href = 'https://wa.me/?text=' + encodeURIComponent(text()); });
+  var connecting = false;
+  build();
+  setStatus('local');
+})();
+</script>
+</body>
+</html>
