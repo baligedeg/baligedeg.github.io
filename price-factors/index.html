@@ -40,6 +40,14 @@ body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(-
 h1 { margin: 0; font: 400 clamp(32px, 7vw, 46px)/1.04 var(--font-display); letter-spacing: -.02em; text-wrap: balance; }
 .lead { margin: 0; font-size: 17px; max-width: 62ch; }
 .howto { margin: 0; color: var(--muted); font-size: 15px; max-width: 62ch; }
+.want { margin: 0; font-size: 17px; max-width: 62ch; }
+.want strong, .approx strong { font-weight: 600; }
+.approx { margin: 0; padding: 12px 14px; border-left: 3px solid var(--accent); background: var(--field); font-size: 15px; max-width: 62ch; }
+.steps { display: grid; gap: 12px; margin-top: 6px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.steps .steps__title { padding-top: 0; font-size: clamp(21px, 4vw, 24px); }
+.steps__list { display: grid; gap: 10px; margin: 0; padding-left: 1.5em; max-width: 62ch; }
+.steps__list li { padding-left: .2em; }
+.steps__list li::marker { font: 500 14px/1 var(--font-mono); color: var(--muted); }
 .lang { display: flex; flex-wrap: wrap; gap: 8px; }
 .banner { margin: 0; padding: 12px 14px; border: 1px solid var(--accent); color: var(--fg); font-size: 15px; }
 h2 { margin: 0; padding-top: 36px; font: 400 clamp(24px, 4.6vw, 30px)/1.15 var(--font-display); letter-spacing: -.01em; text-wrap: balance; }
@@ -104,12 +112,18 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
   <header class="head">
     <p class="eyebrow" id="t-eyebrow">Bali Gedeg · website calculator</p>
     <h1 id="t-title">What changes the price?</h1>
-    <p class="lead" id="t-lead"></p>
     <div class="lang" role="group" aria-label="Language / Bahasa">
       <button type="button" data-lang="en" aria-pressed="true">English</button>
       <button type="button" data-lang="id" aria-pressed="false">Bahasa Indonesia</button>
     </div>
-    <p class="howto" id="t-howto"></p>
+    <p class="lead" id="t-lead"></p>
+    <p class="want" id="t-want"></p>
+    <p class="approx" id="t-approx"></p>
+    <section class="steps" aria-labelledby="t-stepsTitle">
+      <h2 class="steps__title" id="t-stepsTitle"></h2>
+      <ol class="steps__list" id="steps"></ol>
+      <p class="howto" id="t-howto"></p>
+    </section>
     <p class="banner" id="banner" hidden></p>
   </header>
 
@@ -120,11 +134,9 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       <span class="progress" id="progress"></span>
       <span class="status" id="status" role="status" aria-live="polite"></span>
     </div>
-    <a class="copy" id="send" href="https://api.whatsapp.com/send"></a>
+    <button type="button" class="copy" id="copy"></button>
   </div>
   <div class="after">
-    <p class="after__text" id="t-copyHint"></p>
-    <button type="button" class="copy copy--quiet" id="copy"></button>
     <p class="copied" id="copied" role="status" aria-live="polite"></p>
     <textarea class="copy-text" id="copy-text" hidden readonly aria-label="Answers" aria-describedby="copied"></textarea>
   </div>
@@ -141,8 +153,15 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     en: {
       eyebrow: 'Bali Gedeg · website calculator',
       title: 'What changes the price?',
-      lead: 'The price calculator on our new website now uses your estimates of 13 November: 10, 12 and 13.5 million rupiah per m² for Basic, Standard and Premium finish. Please tick what you offer, write anything that is missing, and mark which choices change the price, and by how much.',
-      howto: 'Tick the options you offer and tap Yes, No or Not sure for each item. Your answers stay on this device while you fill it in. When you are done, tap “Send on WhatsApp” at the bottom and send them to us. The button also copies your answers, so you can paste them if needed.',
+      lead: 'Our new website will have a price calculator. A client chooses the type of house, the size, the finish and extras, and sees an approximate price at once, before contacting us. It already uses your estimates of 13 November: 10, 12 and 13.5 million rupiah per m² for Basic, Standard and Premium finish.',
+      want: 'What we want: the calculator should be close to your real prices. Please tell us which choices change the price and by how much, and check a few of our numbers.',
+      approx: 'These are approximate prices. The calculator shows a range of ±10%, and every client is told that the final price is set after the design. So a rough answer is enough: a round percentage is fine, and “Not sure” is a good answer too.',
+      stepsTitle: 'How to fill it in',
+      step1: 'Go down the list. In each item, tick the options you offer. If something is missing, write it in “Your own option”.',
+      step2: 'Tap Yes, No or Not sure: does this choice change the price per m²? If Yes, write the difference against the first option in %, for example concrete −5%, timber +10%.',
+      step3: 'In part 2, check our numbers and answer the questions. If our numbers are right, tap Yes. If not, correct them and tap “No, I changed them”. You can add a comment anywhere.',
+      step4: 'When you finish, tap “Copy answers” at the bottom. Open our chat in WhatsApp, press and hold the message box, tap Paste and send.',
+      howto: 'Your answers are kept on this device while you fill it in, so you can stop and come back later.',
       s1: 'What do you offer, and what changes the price?',
       s1sub: 'Tick every option you offer and write your own if it is missing. Then say whether the choice makes the price per m² higher or lower. If yes, write the difference against the first option, in %. For example: concrete −5%, timber +10%.',
       s2: 'Please check our numbers',
@@ -173,18 +192,25 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       site: 'Prices on the website', siteQ: 'Is it OK that the website shows these approximate prices?', updateEvery: 'How often do your prices change, so we know when to update them?',
       progress: '{n} of {total} answered',
       st_connecting: 'Connecting…', st_ready: 'Answers save by themselves', st_saving: 'Saving…', st_saved: 'All answers saved',
-      st_local: 'Kept on this device until you send it', st_error: 'Not saved. Copy your answers and send them on WhatsApp.', st_slow: 'Saved answers can’t be loaded yet. You can keep going.',
-      banner: 'This page can’t save your answers here. Fill it in, then tap “Copy all answers” and send them on WhatsApp.',
-      send: 'Send on WhatsApp', copy: 'Copy answers', copyHint: 'If WhatsApp doesn’t open, or opens without your answers, copy them here and paste them into our chat.', copied: 'Copied. Open our chat in WhatsApp, press and hold the message box and tap Paste.', copyFail: 'Couldn’t copy automatically. Press and hold the text below, select all of it (drag the handles to the start and the end), then tap “Copy”.', copyStale: 'You changed answers after copying. Tap “Copy answers” again.', sentCopied: 'Your answers are also copied. If WhatsApp doesn’t open or the message is empty, open our chat, press and hold the message box and tap Paste.', sentNotCopied: 'If WhatsApp doesn’t open, or opens without your answers, use “Copy answers” at the end of the page.',
-      foot: 'This page is only for Bali Gedeg. Nothing is sent until you tap “Send on WhatsApp”.',
+      st_local: 'Saved on this device', st_error: 'Not saved. Copy your answers and send them on WhatsApp.', st_slow: 'Saved answers can’t be loaded yet. You can keep going.',
+      banner: 'This page can’t save your answers here. Fill it in, then tap “Copy answers” and paste them into WhatsApp.',
+      copy: 'Copy answers', copied: 'Copied. Open our chat in WhatsApp, press and hold the message box, tap Paste and send.', copyFail: 'Couldn’t copy automatically. Press and hold the text below, select all of it (drag the handles to the start and the end) and tap “Copy”. Then paste it into our chat in WhatsApp and send.', copyStale: 'You changed answers after copying. Tap “Copy answers” again.',
+      foot: 'This page is only for Bali Gedeg. It sends nothing by itself: your answers leave this device only when you send them in WhatsApp yourself.',
       txtHead: 'Calculator price factors, answers', txtChanges: 'changes the price', txtNoChange: 'does not change the price', txtUnsure: 'not sure', txtNot: 'not answered',
       txtRight: 'right', txtWrong: 'changed', txtNote: 'Comment', txtOther: 'Anything else', txtOffer: 'Offered', txtNone: 'nothing ticked', txtOwn: 'own option'
     },
     id: {
       eyebrow: 'Bali Gedeg · kalkulator situs web',
       title: 'Apa yang mengubah harga?',
-      lead: 'Kalkulator harga di situs baru kita sekarang memakai estimasi Bapak tanggal 13 November: 10, 12, dan 13,5 juta rupiah per m² untuk finishing Basic, Standard, dan Premium. Mohon centang yang Bapak tawarkan, tulis yang belum ada, dan tandai pilihan yang mengubah harga, serta seberapa besar.',
-      howto: 'Centang pilihan yang Bapak tawarkan dan ketuk Ya, Tidak, atau Belum tahu untuk setiap poin. Jawaban tetap tersimpan di perangkat ini selama Bapak mengisi. Setelah selesai, ketuk “Kirim lewat WhatsApp” di bawah dan kirim ke kami. Tombol itu juga menyalin jawaban Bapak, jadi bisa ditempel jika perlu.',
+      lead: 'Situs baru kita akan punya kalkulator harga. Klien memilih jenis rumah, luas, finishing, dan tambahan, lalu langsung melihat perkiraan harga sebelum menghubungi kita. Kalkulator ini sudah memakai estimasi Bapak tanggal 13 November: 10, 12, dan 13,5 juta rupiah per m² untuk finishing Basic, Standard, dan Premium.',
+      want: 'Yang kami inginkan: harga di kalkulator mendekati harga Bapak yang sebenarnya. Mohon beri tahu pilihan mana yang mengubah harga dan seberapa besar, lalu periksa beberapa angka kami.',
+      approx: 'Ini harga perkiraan. Kalkulator menunjukkan kisaran ±10%, dan setiap klien diberi tahu bahwa harga akhir ditentukan setelah desain. Jadi jawaban kira-kira sudah cukup: persen bulat tidak apa-apa, dan “Belum tahu” juga jawaban yang baik.',
+      stepsTitle: 'Cara mengisi',
+      step1: 'Isi daftar dari atas ke bawah. Di setiap poin, centang pilihan yang Bapak tawarkan. Jika ada yang belum tercantum, tulis di “Pilihan lain (tulis sendiri)”.',
+      step2: 'Ketuk Ya, Tidak, atau Belum tahu: apakah pilihan ini mengubah harga per m²? Jika Ya, tulis selisihnya dalam % dibandingkan pilihan pertama, misalnya beton −5%, kayu +10%.',
+      step3: 'Di bagian 2, periksa angka kami dan jawab pertanyaannya. Jika angkanya sudah benar, ketuk Ya. Jika belum, perbaiki lalu ketuk “Tidak, sudah saya ubah”. Catatan boleh ditambahkan di mana saja.',
+      step4: 'Setelah selesai, ketuk “Salin jawaban” di bawah. Buka chat kami di WhatsApp, tekan lama kolom pesan, ketuk Tempel, lalu kirim.',
+      howto: 'Jawaban tersimpan di perangkat ini selama Bapak mengisi, jadi bisa berhenti dan dilanjutkan nanti.',
       s1: 'Apa yang Bapak tawarkan, dan apa yang mengubah harga?',
       s1sub: 'Centang setiap pilihan yang Bapak tawarkan dan tulis sendiri jika belum ada. Lalu tandai apakah pilihan itu membuat harga per m² lebih tinggi atau lebih rendah. Jika ya, tulis selisihnya dibandingkan pilihan pertama, dalam %. Contoh: beton −5%, kayu +10%.',
       s2: 'Mohon cek angka kami',
@@ -215,10 +241,10 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       site: 'Harga di situs web', siteQ: 'Apakah boleh situs menampilkan harga perkiraan ini?', updateEvery: 'Seberapa sering harga Bapak berubah, agar kami tahu kapan memperbaruinya?',
       progress: '{n} dari {total} sudah dijawab',
       st_connecting: 'Menghubungkan…', st_ready: 'Jawaban tersimpan sendiri', st_saving: 'Menyimpan…', st_saved: 'Semua jawaban tersimpan',
-      st_local: 'Tersimpan di perangkat ini sampai dikirim', st_error: 'Belum tersimpan. Salin jawaban dan kirim lewat WhatsApp.', st_slow: 'Jawaban tersimpan belum bisa dimuat. Bapak bisa tetap mengisi.',
-      banner: 'Halaman ini tidak bisa menyimpan jawaban di sini. Isi dulu, lalu ketuk “Salin semua jawaban” dan kirim lewat WhatsApp.',
-      send: 'Kirim lewat WhatsApp', copy: 'Salin jawaban', copyHint: 'Jika WhatsApp tidak terbuka atau terbuka tanpa jawaban Bapak, salin di sini lalu tempel di chat kami.', copied: 'Tersalin. Buka chat kami di WhatsApp, tekan lama kolom pesan, lalu ketuk Tempel.', copyFail: 'Tidak bisa menyalin otomatis. Tekan lama teks di bawah, pilih semua teksnya (geser penanda ke awal dan akhir), lalu ketuk “Salin”.', copyStale: 'Jawaban diubah setelah disalin. Ketuk “Salin jawaban” lagi.', sentCopied: 'Jawaban Bapak juga sudah disalin. Jika WhatsApp tidak terbuka atau pesannya kosong, buka chat kami, tekan lama kolom pesan, lalu ketuk Tempel.', sentNotCopied: 'Jika WhatsApp tidak terbuka atau terbuka tanpa jawaban Bapak, pakai “Salin jawaban” di akhir halaman.',
-      foot: 'Halaman ini hanya untuk Bali Gedeg. Tidak ada yang terkirim sebelum Bapak mengetuk “Kirim lewat WhatsApp”.',
+      st_local: 'Tersimpan di perangkat ini', st_error: 'Belum tersimpan. Salin jawaban dan kirim lewat WhatsApp.', st_slow: 'Jawaban tersimpan belum bisa dimuat. Bapak bisa tetap mengisi.',
+      banner: 'Halaman ini tidak bisa menyimpan jawaban di sini. Isi dulu, lalu ketuk “Salin jawaban” dan tempel di WhatsApp.',
+      copy: 'Salin jawaban', copied: 'Tersalin. Buka chat kami di WhatsApp, tekan lama kolom pesan, ketuk Tempel, lalu kirim.', copyFail: 'Tidak bisa menyalin otomatis. Tekan lama teks di bawah, pilih semua teksnya (geser penanda ke awal dan akhir), lalu ketuk “Salin”. Setelah itu, tempel di chat WhatsApp kami dan kirim.', copyStale: 'Jawaban diubah setelah disalin. Ketuk “Salin jawaban” lagi.',
+      foot: 'Halaman ini hanya untuk Bali Gedeg dan tidak mengirim apa pun secara otomatis: jawaban hanya keluar dari perangkat ini saat Bapak sendiri mengirimnya lewat WhatsApp.',
       txtHead: 'Faktor harga kalkulator, jawaban', txtChanges: 'mengubah harga', txtNoChange: 'tidak mengubah harga', txtUnsure: 'belum tahu', txtNot: 'belum dijawab',
       txtRight: 'benar', txtWrong: 'diubah', txtNote: 'Catatan', txtOther: 'Hal lain', txtOffer: 'Ditawarkan', txtNone: 'belum dicentang', txtOwn: 'pilihan lain'
     }
@@ -366,8 +392,17 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     form.appendChild(el('section', { class: 'item other', 'data-item': 'other' }, [
       el('label', { class: 'field', for: oid }, [el('span', { text: t('s3hint') }), el('textarea', { id: oid, 'data-key': 'other', 'data-field': 'text' })])]));
 
-    ['eyebrow', 'title', 'lead', 'howto', 'foot', 'copyHint'].forEach(function (k) { $('t-' + k).textContent = t(k); });
-    $('copy').textContent = t('copy'); $('send').textContent = t('send');
+    ['eyebrow', 'title', 'lead', 'stepsTitle', 'howto', 'foot'].forEach(function (k) { $('t-' + k).textContent = t(k); });
+    /* the label before the first colon, or the first sentence, in bold */
+    ['want', 'approx'].forEach(function (k) {
+      var txt = t(k), cut = txt.search(/[:.]\s/), node = $('t-' + k);
+      node.textContent = '';
+      if (cut > 0) { node.appendChild(el('strong', { text: txt.slice(0, cut + 1) })); node.appendChild(document.createTextNode(txt.slice(cut + 1))); }
+      else node.textContent = txt;
+    });
+    var steps = $('steps'); steps.textContent = '';
+    ['step1', 'step2', 'step3', 'step4'].forEach(function (k) { steps.appendChild(el('li', { text: t(k) })); });
+    $('copy').textContent = t('copy');
     document.documentElement.lang = lang;
     Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang)); });
     Object.keys(DEFAULTS).forEach(fill);
@@ -394,7 +429,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     Array.prototype.forEach.call(document.querySelectorAll('[data-own-label="' + key + '"]'), function (n) { n.textContent = own || t('own'); });
   }
   function answered() { return Object.keys(ANSWER_FIELD).filter(function (k) { return !!state[k][ANSWER_FIELD[k]]; }).length; }
-  function progress() { $('progress').textContent = t('progress').replace('{n}', answered()).replace('{total}', TOTAL); $('send').href = waLink(text()); }
+  function progress() { $('progress').textContent = t('progress').replace('{n}', answered()).replace('{total}', TOTAL); }
 
   /* ---------- saving ---------- */
   var db = null, localOnly = false, statusKey = 'local', dirty = {}, inflight = {}, again = {}, timers = {};
@@ -539,7 +574,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { $('toast').textContent = ''; }, 8000);
   }
-  /* while WhatsApp is in front the page is hidden: keep the message until he is back */
+  /* while he is in WhatsApp the page is hidden: keep the message until he is back */
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) clearTimeout(toastTimer); else if ($('toast').textContent) hideToastLater();
   });
@@ -548,7 +583,7 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
   var copyState = '';
   function copyRefresh(edited) {
     var msg = $('copied'), area = $('copy-text');
-    if (edited && copyState === 'copied') copyState = 'stale';
+    if (edited && copyState === 'copied') { copyState = 'stale'; $('toast').textContent = ''; }
     if (copyState === 'failed') area.value = text();
     var want = copyState ? t({ copied: 'copied', stale: 'copyStale', failed: 'copyFail' }[copyState]) : '';
     if (msg.textContent !== want) msg.textContent = want;
@@ -559,27 +594,12 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
       copyState = ok ? 'copied' : 'failed';
       area.hidden = ok;
       copyRefresh(false);
-      if (ok) return;
+      if (ok) { toast(t('copied')); return; }
       try { area.focus({ preventScroll: true }); area.select(); area.setSelectionRange(0, area.value.length); } catch (e) {}
       area.scrollIntoView({ block: 'center' });
     });
   });
 
-  /* ---------- sending ---------- */
-  /* api.whatsapp.com/send with only a text opens WhatsApp (an app link on Android and iPhone) and lets him
-     pick the chat. Unlike wa.me it keeps emoji when the request goes through the web. Same tab: in-app
-     browsers may drop target=_blank, and the draft is in localStorage if the page is left. The same tap
-     copies the answers too, so he can paste them if WhatsApp opens without the text. */
-  function waLink(s) {
-    var base = 'https://api.whatsapp.com/send?text=';
-    try { return base + encodeURIComponent(s); }
-    catch (e) { return base + encodeURIComponent(s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(^|[^\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '$1\uFFFD')); }
-  }
-  $('send').addEventListener('click', function () {
-    var s = text();
-    this.href = waLink(s);
-    copyText(s, function (ok) { toast(t(ok ? 'sentCopied' : 'sentNotCopied')); });
-  });
   var connecting = false;
   build();
   setStatus('local');
